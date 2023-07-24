@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    commit-message:
+      prefix: "chore:"
+    schedule:
+      interval: monthly
+    reviewers:
+      - "vitalvas"
+    assignees:
+      - "vitalvas"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    commit-message:
+      prefix: "chore:"
+    schedule:
+      interval: monthly
+    reviewers:
+      - "vitalvas"
+    assignees:
+      - "vitalvas"
