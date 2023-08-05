@@ -3,8 +3,6 @@ package secrets
 import (
 	"context"
 
-	"google.golang.org/grpc"
-
 	"github.com/pixconf/pixconf/internal/app/secrets/config"
 	"github.com/pixconf/pixconf/internal/app/secrets/postgres"
 	"github.com/pixconf/pixconf/internal/logger"
@@ -18,8 +16,6 @@ type Options struct {
 }
 
 type Secrets struct {
-	server *grpc.Server
-
 	config *config.Config
 	ctx    context.Context
 	log    *logger.Logger
@@ -37,10 +33,6 @@ func New(opts Options) *Secrets {
 }
 
 func (s *Secrets) Shutdown() {
-	if s.server != nil {
-		s.server.Stop()
-	}
-
 	if s.db != nil {
 		s.db.Shutdown()
 	}
