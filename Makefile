@@ -26,18 +26,17 @@ test-unit-coverage:
 build-protos:
 	rm -f internal/protos/*.pb.go
 	protoc --go_out=internal/protos/ --go-grpc_out=internal/protos/ internal/protos/src/hub_service.proto
-	protoc --go_out=internal/protos/ --go-grpc_out=internal/protos/ internal/protos/src/secrets.proto
 
 all: build-agent build-hub build-secrets
 
 build-agent:
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-agent-linux-amd64 $(PKG_PREFIX)/cmd/agent
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-agent-linux-amd64 $(PKG_PREFIX)/cmd/agent
 
 build-hub:
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-hub-linux-amd64 $(PKG_PREFIX)/cmd/hub
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-hub-linux-amd64 $(PKG_PREFIX)/cmd/hub
 
 build-secrets:
-	GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-secrets-linux-amd64 $(PKG_PREFIX)/cmd/secrets
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-secrets-linux-amd64 $(PKG_PREFIX)/cmd/secrets
 
 update:
 	go get -v -u -d ./...

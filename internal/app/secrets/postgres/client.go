@@ -28,7 +28,7 @@ type Options struct {
 	Log        *logger.Logger
 }
 
-func NewDBClient(opts Options) (*Client, error) {
+func NewClient(opts Options) (*Client, error) {
 	poolConfig, err := pgxpool.ParseConfig(opts.ConnectURL)
 	if err != nil {
 		return nil, err

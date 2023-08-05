@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 
+	"github.com/vitalvas/gokit/xcmd"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/pixconf/pixconf/internal/logger"
-	"github.com/pixconf/pixconf/internal/tools"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	group, ctx := errgroup.WithContext(context.Background())
 
 	group.Go(func() error {
-		return tools.WaitInterrupted(ctx)
+		return xcmd.WaitInterrupted(ctx)
 	})
 
 	if err := group.Wait(); err != nil {

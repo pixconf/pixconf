@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
+	"github.com/vitalvas/gokit/xcmd"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/pixconf/pixconf/internal/app/secrets/config"
 	"github.com/pixconf/pixconf/internal/app/secrets/postgres"
 	"github.com/pixconf/pixconf/internal/logger"
-	"github.com/pixconf/pixconf/internal/tools"
 )
 
 func Execute() {
@@ -22,7 +22,7 @@ func Execute() {
 		log.Fatal(err)
 	}
 
-	dbClient, err := postgres.NewDBClient(postgres.Options{
+	dbClient, err := postgres.NewClient(postgres.Options{
 		Config:     conf,
 		ConnectURL: conf.PostgresURL,
 		Context:    ctx,
@@ -42,7 +42,7 @@ func Execute() {
 	defer server.Shutdown()
 
 	group.Go(func() error {
-		return tools.WaitInterrupted(ctx)
+		return xcmd.WaitInterrupted(ctx)
 	})
 
 	group.Go(func() error {
@@ -57,7 +57,8 @@ func Execute() {
 
 			return nil
 		}
-		return tools.PeriodicRun(ctx, runner, time.Hour)
+
+		return xcmd.PeriodicRun(ctx, runner, time.Hour)
 	})
 
 	if err := group.Wait(); err != nil {
