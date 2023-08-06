@@ -20,14 +20,21 @@ func (s *Secrets) apiTransitEncrypt(c *gin.Context) {
 		return
 	}
 
-	epoch, err := s.db.GetCurrentEpoch(c.Request.Context(), true)
+	epochInfo, err := s.db.GetCurrentEpoch(c.Request.Context(), true)
 	if err != nil {
 		resp := xerror.ErrorSingle(http.StatusInternalServerError, err.Error())
 		c.JSON(resp.Code, resp)
 		return
 	}
 
-	encrypted, err := s.db.Encrypt.Encrypt([]byte(request.Data))
+	enc, err := encrypt.New(epochInfo.PrivateKey, epochInfo.EncryptionType)
+	if err != nil {
+		resp := xerror.ErrorSingle(http.StatusInternalServerError, err.Error())
+		c.JSON(resp.Code, resp)
+		return
+	}
+
+	encrypted, err := enc.Encrypt([]byte(request.Data))
 	if err != nil {
 		resp := xerror.ErrorSingle(http.StatusInternalServerError, err.Error())
 		c.JSON(resp.Code, resp)
@@ -35,7 +42,7 @@ func (s *Secrets) apiTransitEncrypt(c *gin.Context) {
 	}
 
 	response := protos.TransitEncryptResponse{
-		Data: fmt.Sprintf("secrets:v1:%s:%s", strconv.FormatInt(epoch.ID, 16), encrypt.EncodeToString(encrypted)),
+		Data: fmt.Sprintf("secrets:v1:%s:%s", strconv.FormatInt(epochInfo.ID, 16), encrypt.EncodeToString(encrypted)),
 	}
 
 	c.JSON(http.StatusOK, response)
