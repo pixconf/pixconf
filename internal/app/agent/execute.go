@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func (a *Agent) Execute(c *cli.Context) error {
+func (a *Agent) Execute(_ *cli.Context) error {
 	group, ctx := errgroup.WithContext(context.Background())
 
 	group.Go(func() error {
