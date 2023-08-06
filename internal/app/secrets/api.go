@@ -3,6 +3,7 @@ package secrets
 import (
 	"crypto/tls"
 	"errors"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pixconf/pixconf/internal/autocert"
@@ -46,6 +47,11 @@ func (s *Secrets) ListenAndServe() error {
 		return err
 	}
 
+	s.srv = &http.Server{
+		Addr:    s.config.APIAddress,
+		Handler: router,
+	}
+
 	if s.config.TLSCertPath == "" && s.config.TLSKeyPath == "" {
 		cert, privateKey, err := autocert.GenerateSelfSignedECDSACert("secrets")
 		if err != nil {
@@ -62,8 +68,10 @@ func (s *Secrets) ListenAndServe() error {
 			return err
 		}
 
-		return router.RunListener(listen)
+		defer listen.Close()
+
+		return s.srv.Serve(listen)
 	}
 
-	return router.RunTLS(s.config.APIAddress, s.config.TLSCertPath, s.config.TLSKeyPath)
+	return s.srv.ListenAndServeTLS(s.config.TLSCertPath, s.config.TLSKeyPath)
 }

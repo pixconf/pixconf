@@ -2,6 +2,8 @@ package secrets
 
 import (
 	"context"
+	"net/http"
+	"time"
 
 	"github.com/pixconf/pixconf/internal/app/secrets/config"
 	"github.com/pixconf/pixconf/internal/app/secrets/postgres"
@@ -20,7 +22,8 @@ type Secrets struct {
 	ctx    context.Context
 	log    *logger.Logger
 
-	db *postgres.Client
+	db  *postgres.Client
+	srv *http.Server
 }
 
 func New(opts Options) *Secrets {
@@ -33,6 +36,13 @@ func New(opts Options) *Secrets {
 }
 
 func (s *Secrets) Shutdown() {
+	ctx, cancel := context.WithTimeout(s.ctx, 5*time.Second)
+	defer cancel()
+
+	if s.srv != nil {
+		s.srv.Shutdown(ctx)
+	}
+
 	if s.db != nil {
 		s.db.Shutdown()
 	}

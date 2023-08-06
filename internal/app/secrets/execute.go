@@ -2,6 +2,7 @@ package secrets
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/vitalvas/gokit/xcmd"
@@ -39,14 +40,12 @@ func Execute() {
 		Log:     log,
 	})
 
-	defer server.Shutdown()
-
 	group.Go(func() error {
-		return xcmd.WaitInterrupted(ctx)
-	})
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			return err
+		}
 
-	group.Go(func() error {
-		return server.ListenAndServe()
+		return nil
 	})
 
 	group.Go(func() error {
@@ -59,6 +58,12 @@ func Execute() {
 		}
 
 		return xcmd.PeriodicRun(ctx, runner, time.Hour)
+	})
+
+	group.Go(func() error {
+		err := xcmd.WaitInterrupted(ctx)
+		server.Shutdown()
+		return err
 	})
 
 	if err := group.Wait(); err != nil {
