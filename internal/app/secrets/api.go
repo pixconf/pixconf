@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pixconf/pixconf/internal/autocert"
@@ -48,8 +49,11 @@ func (s *Secrets) ListenAndServe() error {
 	}
 
 	s.srv = &http.Server{
-		Addr:    s.config.APIAddress,
-		Handler: router,
+		Addr:              s.config.APIAddress,
+		Handler:           router,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
 
 	if s.config.TLSCertPath == "" && s.config.TLSKeyPath == "" {
