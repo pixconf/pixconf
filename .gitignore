@@ -1,5 +1,5 @@
 build/
 .vscode/
-coverage.out
+coverage.txt
 *.pem
 tmp/

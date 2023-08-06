@@ -19,9 +19,11 @@ test-lint:
 test-unit:
 	go test -race -cover ./...
 
-test-unit-coverage:
-	go test -coverprofile=coverage.out ./... -timeout 120s
-	go tool cover -html=coverage.out
+test-pure:
+	CGO_ENABLED=0 go test ./...
+
+test-full:
+	go test -coverprofile=coverage.txt -covermode=atomic ./...
 
 build-protos:
 	rm -f internal/protos/*.pb.go
@@ -37,6 +39,7 @@ build-hub:
 
 build-secrets:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-secrets-linux-amd64 $(PKG_PREFIX)/cmd/secrets
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-secrets-darwin-amd64 $(PKG_PREFIX)/cmd/secrets
 
 update:
 	go get -v -u -d ./...
