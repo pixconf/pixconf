@@ -15,8 +15,8 @@ type Config struct {
 	MasterEncryptionKey string        `split_words:"true" required:"true"`
 	DatabaseURL         string        `split_words:"true" default:"postgres://pixconf:pixconf@localhost:5432/pixconf?sslmode=prefer"`
 	RotateEpochKeyTime  time.Duration `split_words:"true" default:"336h"`
-	TLSCertPath         string        `split_words:"true" required:"true"`
-	TLSKeyPath          string        `split_words:"true" required:"true"`
+	TLSCertPath         string        `split_words:"true"`
+	TLSKeyPath          string        `split_words:"true"`
 }
 
 func New() (*Config, error) {

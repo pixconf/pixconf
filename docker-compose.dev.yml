@@ -6,19 +6,6 @@ volumes:
   postgresql: {}
 
 services:
-  traefik:
-    image: 'traefik:v2.10'
-    command:
-      - '--api.insecure=true'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-    ports:
-      - '80:80'
-      - '8080:8080'
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
-
   # docker exec -it pixconf-postgresql-1 psql -U pixconf -W pixconf
   postgresql:
     image: postgres:15
@@ -31,3 +18,14 @@ services:
       - '5432:5432'
     volumes:
       - postgresql:/var/lib/postgresql/data
+
+  secrets:
+    image: ubuntu:jammy
+    command: /build/pixconf-secrets-linux-amd64
+    environment:
+      - SECRETS_MASTER_ENCRYPTION_KEY=5goenwVdrZTVfJM9r6oVy5fSNo4eL/MED/YBgK3tS4o=
+      - SECRETS_DATABASE_URL=postgres://pixconf:pixconf@postgresql:5432/pixconf
+    volumes:
+      - ./build/:/build
+    ports:
+      - '8142:8142'
