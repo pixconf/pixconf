@@ -1,0 +1,20 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 0%
+
+flags:
+  agent:
+    paths:
+      - cmd/agent/*
+      - internal/app/agent/*
+  hub:
+    paths:
+      - cmd/hub/*
+      - internal/app/hub/*
+  secrets:
+    paths:
+      - cmd/secrets/*
+      - internal/app/secrets/*
