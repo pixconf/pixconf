@@ -1,9 +1,7 @@
 package main
 
-import (
-	"github.com/pixconf/pixconf/internal/app/agent"
-)
+import "github.com/pixconf/pixconf/internal/app/agent/cmd"
 
 func main() {
-	agent.Execute()
+	cmd.Execute()
 }

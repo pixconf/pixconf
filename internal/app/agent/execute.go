@@ -3,27 +3,21 @@ package agent
 import (
 	"context"
 
+	"github.com/urfave/cli/v2"
 	"github.com/vitalvas/gokit/xcmd"
 	"golang.org/x/sync/errgroup"
-
-	"github.com/pixconf/pixconf/internal/logger"
 )
 
-func Execute() {
-	log := logger.New(false)
+func (a *Agent) Execute(c *cli.Context) error {
 	group, ctx := errgroup.WithContext(context.Background())
 
-	app := New()
-
 	group.Go(func() error {
-		return app.ListenAndServe()
+		return a.ListenAndServe()
 	})
 
 	group.Go(func() error {
 		return xcmd.WaitInterrupted(ctx)
 	})
 
-	if err := group.Wait(); err != nil {
-		log.Error(err)
-	}
+	return group.Wait()
 }

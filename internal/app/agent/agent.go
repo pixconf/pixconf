@@ -1,7 +1,17 @@
 package agent
 
-type Agent struct{}
+import "github.com/pixconf/pixconf/internal/logger"
 
-func New() *Agent {
-	return &Agent{}
+type Agent struct {
+	log *logger.Logger
+}
+
+type Options struct {
+	Log *logger.Logger
+}
+
+func New(opts Options) *Agent {
+	return &Agent{
+		log: opts.Log,
+	}
 }
