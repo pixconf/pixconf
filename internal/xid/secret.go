@@ -1,4 +1,4 @@
-package postgres
+package xid
 
 import (
 	"crypto/rand"
@@ -19,6 +19,7 @@ func GenerateSecretID() (string, error) {
 		if err != nil {
 			return "", err
 		}
+
 		randomString[i] = SecretIDSChars[randomIndex.Int64()]
 	}
 
