@@ -24,7 +24,7 @@ func Execute() {
 
 	dbClient, err := postgres.NewClient(postgres.Options{
 		Config:     conf,
-		ConnectURL: conf.PostgresURL,
+		ConnectURL: conf.DatabaseURL,
 		Context:    ctx,
 		Log:        log,
 	})

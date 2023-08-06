@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	APIAddr             string        `split_words:"true" default:"[::]:8142"`
+	APIAddress          string        `split_words:"true" default:"[::]:8142"`
 	MasterEncryptionKey string        `split_words:"true" required:"true"`
-	PostgresURL         string        `split_words:"true" default:"postgres://pixconf:pixconf@localhost:5432/pixconf"`
+	DatabaseURL         string        `split_words:"true" default:"postgres://pixconf:pixconf@localhost:5432/pixconf?sslmode=prefer"`
 	RotateEpochKeyTime  time.Duration `split_words:"true" default:"336h"`
 	TLSCertPath         string        `split_words:"true" required:"true"`
 	TLSKeyPath          string        `split_words:"true" required:"true"`

@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"errors"
+	"net/url"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/tracelog"
@@ -29,6 +31,15 @@ type Options struct {
 }
 
 func NewClient(opts Options) (*Client, error) {
+	urlData, err := url.Parse(opts.ConnectURL)
+	if err != nil {
+		return nil, err
+	}
+
+	if urlData.Scheme != "postgres" {
+		return nil, errors.New("database provider support postgres only")
+	}
+
 	poolConfig, err := pgxpool.ParseConfig(opts.ConnectURL)
 	if err != nil {
 		return nil, err
@@ -37,6 +48,14 @@ func NewClient(opts Options) (*Client, error) {
 	poolConfig.ConnConfig.Tracer = &tracelog.TraceLog{
 		Logger:   pgxlogger.NewLogger(opts.Log),
 		LogLevel: tracelog.LogLevelWarn,
+	}
+
+	if poolConfig.ConnConfig.RuntimeParams == nil {
+		poolConfig.ConnConfig.RuntimeParams = make(map[string]string)
+	}
+
+	if _, ok := poolConfig.ConnConfig.RuntimeParams["application_name"]; !ok {
+		poolConfig.ConnConfig.RuntimeParams["application_name"] = "pixconf-secrets"
 	}
 
 	conn, err := pgxpool.NewWithConfig(opts.Context, poolConfig)
