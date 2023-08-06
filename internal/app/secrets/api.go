@@ -37,12 +37,12 @@ func (s *Secrets) ListenAndServe() error {
 		return errors.New("no config defined")
 	}
 
-	s.log.Infof("listen on %s", s.config.APIAddr)
+	s.log.Infof("listen on %s", s.config.APIAddress)
 
 	router, err := s.routerEngine()
 	if err != nil {
 		return err
 	}
 
-	return router.RunTLS(s.config.APIAddr, s.config.TLSCertPath, s.config.TLSKeyPath)
+	return router.RunTLS(s.config.APIAddress, s.config.TLSCertPath, s.config.TLSKeyPath)
 }
