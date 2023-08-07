@@ -8,11 +8,13 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func (a *Agent) Execute(c *cli.Context) error {
-	group, ctx := errgroup.WithContext(c.Context)
+func (a *Agent) Execute(cCtx *cli.Context) error {
+	group, ctx := errgroup.WithContext(cCtx.Context)
 
 	group.Go(func() error {
-		if err := a.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		socketPath := cCtx.String("agent-api-socket")
+
+		if err := a.ListenAndServe(socketPath); err != nil && err != http.ErrServerClosed {
 			return err
 		}
 

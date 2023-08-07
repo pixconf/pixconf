@@ -1,5 +1,7 @@
 package xerror
 
+import "encoding/json"
+
 type Response struct {
 	Code   int       `json:"code"`
 	Errors []Message `json:"errors"`
@@ -16,4 +18,8 @@ func ErrorSingle(code int, message string) Response {
 			{Message: message},
 		},
 	}
+}
+
+func (r *Response) Marshal() ([]byte, error) {
+	return json.Marshal(r)
 }

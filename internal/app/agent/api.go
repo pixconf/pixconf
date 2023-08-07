@@ -8,9 +8,7 @@ import (
 	"time"
 )
 
-const apiSocket = "/run/pixconf-agent.sock"
-
-func (a *Agent) ListenAndServe() error {
+func (a *Agent) ListenAndServe(apiSocket string) error {
 	if _, err := os.Stat(apiSocket); !errors.Is(err, os.ErrNotExist) {
 		// TODO: add check if another agent is running
 		return errors.New("found api socket")
@@ -41,6 +39,8 @@ func (a *Agent) ListenAndServe() error {
 
 func (a *Agent) apiRouterEngine() *http.ServeMux {
 	r := http.NewServeMux()
+
+	r.HandleFunc("/info", a.apiInfo)
 
 	return r
 }
