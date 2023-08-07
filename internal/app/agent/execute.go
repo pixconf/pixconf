@@ -1,22 +1,28 @@
 package agent
 
 import (
-	"context"
+	"net/http"
 
 	"github.com/urfave/cli/v2"
 	"github.com/vitalvas/gokit/xcmd"
 	"golang.org/x/sync/errgroup"
 )
 
-func (a *Agent) Execute(_ *cli.Context) error {
-	group, ctx := errgroup.WithContext(context.Background())
+func (a *Agent) Execute(c *cli.Context) error {
+	group, ctx := errgroup.WithContext(c.Context)
 
 	group.Go(func() error {
-		return a.ListenAndServe()
+		if err := a.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			return err
+		}
+
+		return nil
 	})
 
 	group.Go(func() error {
-		return xcmd.WaitInterrupted(ctx)
+		err := xcmd.WaitInterrupted(ctx)
+		a.Shutdown()
+		return err
 	})
 
 	return group.Wait()

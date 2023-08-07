@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"time"
 )
 
 const apiSocket = "/run/pixconf-agent.sock"
@@ -28,7 +29,14 @@ func (a *Agent) ListenAndServe() error {
 
 	handler := a.apiRouterEngine()
 
-	return http.Serve(listener, handler)
+	a.apiServer = &http.Server{
+		Handler:           handler,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+
+	return a.apiServer.Serve(listener)
 }
 
 func (a *Agent) apiRouterEngine() *http.ServeMux {
