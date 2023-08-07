@@ -18,3 +18,21 @@ func TestGenerateSecretID(t *testing.T) {
 		t.Error("wrong len of secret id")
 	}
 }
+
+func TestIsValidKey(t *testing.T) {
+	keys := map[string]bool{
+		"ab12efghjkmn56789pqrstuv":     true,
+		"abc123def456ghj789kmnpqr":     true,
+		"ab12efghjkmn56789pqrstuvw":    false,
+		"abcdefghjkmnpqrstuvwxyz":      false,
+		"AB12EFGHJKMN56789PQRSTUV":     false,
+		"abc123def456ghj789kmnpqrs!":   false,
+		"abcdefghjkmnpqrstuvwxyz12345": false,
+	}
+
+	for key, resp := range keys {
+		if ok := IsValidKey(key); ok != resp {
+			t.Errorf("wrong validate: got %#v, valid %#v, key %s", ok, resp, key)
+		}
+	}
+}

@@ -3,12 +3,15 @@ package xid
 import (
 	"crypto/rand"
 	"math/big"
+	"regexp"
 )
 
 const (
 	SecretIDSize   = 24
 	SecretIDSChars = "abcdefghjkmnpqrstuvwxyz123456789"
 )
+
+var secretIDPattern = regexp.MustCompile("^[abcdefghjkmnpqrstuvwxyz123456789]{24}$")
 
 func GenerateSecretID() (string, error) {
 	randomString := make([]byte, SecretIDSize)
@@ -24,4 +27,8 @@ func GenerateSecretID() (string, error) {
 	}
 
 	return string(randomString), nil
+}
+
+func IsValidKey(input string) bool {
+	return secretIDPattern.MatchString(input)
 }
