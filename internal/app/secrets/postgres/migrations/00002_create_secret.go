@@ -5,20 +5,24 @@ import "github.com/pixconf/pixconf/internal/dbmigrator"
 func init() {
 	Migrate.Add(2, dbmigrator.Migrate{
 		Up: []string{
-			"create type secret_state as enum ('normal', 'hidden', 'deleted')",
-			`create table if not exists secrets_secret (
+			`create table secrets_secret (
 				id varchar(32) not null primary key,
 				description varchar(255),
-				state secret_state not null default 'normal',
+				state varchar(12) not null default 'normal' CHECK (state IN ('normal', 'hidden', 'deleted')),
 				created_at timestamptz not null default now(),
-				updated_at timestamptz,
-				tags varchar(255)[],
-				alias varchar(255)[]
+				updated_at timestamptz
 			)`,
-			`create table if not exists secrets_secret_alias_index (
+			`create table secrets_secret_alias (
 				id bigserial primary key,
+				name varchar(255) not null CHECK (name = LOWER(name)),
+				secret_id varchar(32) not null references secrets_secret (id)
+			)`,
+			`CREATE INDEX secrets_secret_alias_name_idx ON secrets_secret_alias (name)`,
+			`create table secrets_secret_tags (
+				id bigserial primary key,
+				name varchar(255),
 				secret_id varchar(32) not null references secrets_secret (id),
-				alias varchar(255) unique 
+				CONSTRAINT secrets_secret_tags_uniqe_name_secret_id UNIQUE (name, secret_id)
 			)`,
 		},
 	})
