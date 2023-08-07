@@ -9,7 +9,7 @@ import (
 	"github.com/pixconf/pixconf/pkg/agent/protos"
 )
 
-func (a *Agent) apiInfo(response http.ResponseWriter, request *http.Request) {
+func (a *Agent) apiInfo(response http.ResponseWriter, _ *http.Request) {
 	resp := protos.InfoResponse{
 		PID: os.Getpid(),
 	}
