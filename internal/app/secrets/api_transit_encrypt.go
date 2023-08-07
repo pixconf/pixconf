@@ -6,9 +6,10 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/pixconf/pixconf/internal/app/secrets/protos"
+
 	"github.com/pixconf/pixconf/internal/encrypt"
 	"github.com/pixconf/pixconf/internal/xerror"
+	"github.com/pixconf/pixconf/pkg/secrets/protos"
 )
 
 func (s *Secrets) apiTransitEncrypt(c *gin.Context) {
