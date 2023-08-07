@@ -19,7 +19,7 @@ func TestGenerateSecretID(t *testing.T) {
 	}
 }
 
-func TestIsValidKey(t *testing.T) {
+func TestIsValidSecretIDKey(t *testing.T) {
 	keys := map[string]bool{
 		"ab12efghjkmn56789pqrstuv":     true,
 		"abc123def456ghj789kmnpqr":     true,
@@ -31,7 +31,7 @@ func TestIsValidKey(t *testing.T) {
 	}
 
 	for key, resp := range keys {
-		if ok := IsValidKey(key); ok != resp {
+		if ok := IsValidSecretIDKey(key); ok != resp {
 			t.Errorf("wrong validate: got %#v, valid %#v, key %s", ok, resp, key)
 		}
 	}

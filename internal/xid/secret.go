@@ -30,6 +30,6 @@ func GenerateSecretID() (string, error) {
 	return string(randomString), nil
 }
 
-func IsValidKey(input string) bool {
+func IsValidSecretIDKey(input string) bool {
 	return secretIDPattern.MatchString(input)
 }
