@@ -29,5 +29,11 @@ func TestEncrypter(t *testing.T) {
 	if _, err = NewEncoded(encrtyptKey, 99); err != ErrUnknownEncryptType {
 		t.Error(err)
 	}
+}
 
+func TestNew(t *testing.T) {
+	_, err := New([]byte{0x0, 0x1, 0x2}, TypeAesGCM)
+	if err != ErrKeySize {
+		t.Error("error check key size")
+	}
 }

@@ -20,6 +20,10 @@ func TestChachaPoly(t *testing.T) {
 		t.Error(err)
 	}
 
+	if enc.GetEncryptType() != TypeChachaPoly {
+		t.Error("wrong encrypt type")
+	}
+
 	testEncrypter(t, enc, encrtyptData)
 
 	encrypedData, err := enc.Encrypt(encrtyptData)

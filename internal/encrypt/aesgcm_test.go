@@ -20,6 +20,10 @@ func TestAesGCM(t *testing.T) {
 		t.Error(err)
 	}
 
+	if enc.GetEncryptType() != TypeAesGCM {
+		t.Error("wrong encrypt type")
+	}
+
 	testEncrypter(t, enc, encrtyptData)
 
 	encrypedData, err := enc.Encrypt(encrtyptData)
