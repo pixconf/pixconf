@@ -8,7 +8,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/urfave/cli/v2 v2.25.7
-	github.com/vitalvas/gokit v0.5.0
+	github.com/vitalvas/gokit v0.6.0
 	golang.org/x/crypto v0.12.0
 	golang.org/x/sync v0.3.0
 	google.golang.org/grpc v1.57.0

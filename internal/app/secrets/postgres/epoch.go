@@ -87,7 +87,7 @@ func (c *Client) createNewEpoch(ctx context.Context) (*Epoch, error) {
 	row := &Epoch{
 		ID:                  time.Now().Unix(),
 		PrivateKeyEncrypted: encrypt.EncodeToString(encryptedKey),
-		PrivateKey:          encryptedKey,
+		PrivateKey:          key,
 	}
 
 	query := "insert into secrets_epoch (id, private_key, encryption_type) values ($1, $2, $3)"

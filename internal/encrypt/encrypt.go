@@ -16,8 +16,8 @@ var (
 type Type uint8
 
 const (
-	TypeAesGCM     = 0
-	TypeChachaPoly = 1
+	TypeAesGCM     Type = 0
+	TypeChachaPoly Type = 1
 )
 
 type Encrypter interface {
