@@ -21,3 +21,13 @@ func TestRenderQuery(t *testing.T) {
 		}
 	}
 }
+
+func TestAdd(t *testing.T) {
+	mig := NewMigrateList("test")
+
+	mig.Add(0, Migrate{Up: []string{"123"}})
+
+	if len(mig.rows) != 1 {
+		t.Error("wrong count of migration list")
+	}
+}
