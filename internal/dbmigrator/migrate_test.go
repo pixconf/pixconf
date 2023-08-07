@@ -6,8 +6,8 @@ func TestRenderQuery(t *testing.T) {
 	mig := NewMigrateList("test")
 
 	rows := map[string]string{
-		"select (version, created) from {{ .scope }}_version":    "select (version, created) from test_version",
-		"insert into {{ .scope }}_version (version) values ($1)": "insert into test_version (version) values ($1)",
+		"select (version, created) from {{ .scope }}_db_version":    "select (version, created) from test_db_version",
+		"insert into {{ .scope }}_db_version (version) values ($1)": "insert into test_db_version (version) values ($1)",
 	}
 
 	for tmpl, resp := range rows {

@@ -56,7 +56,7 @@ func (ml *MigrateList) RunMigrate(ctx context.Context, pg *pgxpool.Pool) error {
 }
 
 func (ml *MigrateList) insertVersion(ctx context.Context, pg *pgxpool.Pool, version int64) error {
-	query, err := ml.renderQuery("insert into {{ .scope }}_version (version) values ($1)")
+	query, err := ml.renderQuery("insert into {{ .scope }}_db_version (version) values ($1)")
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (ml *MigrateList) applyStatement(ctx context.Context, pg *pgxpool.Pool, row
 }
 
 func (ml *MigrateList) getVersions(ctx context.Context, pg *pgxpool.Pool) (map[int64]int64, error) {
-	queryCreate, err := ml.renderQuery("create table if not exists {{ .scope }}_version (version bigint not null, created timestamptz not null default now(), primary key (version))")
+	queryCreate, err := ml.renderQuery("create table if not exists {{ .scope }}_db_version (version bigint not null, created timestamptz not null default now(), primary key (version))")
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (ml *MigrateList) getVersions(ctx context.Context, pg *pgxpool.Pool) (map[i
 
 	versions := make(map[int64]int64)
 
-	query, err := ml.renderQuery("select version, created from {{ .scope }}_version")
+	query, err := ml.renderQuery("select version, created from {{ .scope }}_db_version")
 	if err != nil {
 		return nil, err
 	}
