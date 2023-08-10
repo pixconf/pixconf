@@ -11,6 +11,9 @@ func TestIsValidTag(t *testing.T) {
 		"tag-name",
 		"12345",
 		"tag_name",
+		"DL_Staff_Creative-Admin",
+		"example.com",
+		"insiders:yes",
 	}
 
 	invalidTags := []string{
@@ -18,6 +21,8 @@ func TestIsValidTag(t *testing.T) {
 		"tag with space",
 		"tag with special characters!",
 		"tag_with_very_long_name_that_is_more_than_255_characters_" + strings.Repeat("x", 250),
+		"@tag",
+		"#tag",
 	}
 
 	for _, tag := range validTags {

@@ -2,6 +2,7 @@ package protos
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -19,6 +20,7 @@ func TestIsValidAlias(t *testing.T) {
 		"agent/",
 		"agent/007",
 		"test/test/test/123",
+		fmt.Sprintf("agent/test/test/%s", strings.Repeat("x", maxAliasLenght)),
 	}
 
 	for _, alias := range validAliases {

@@ -9,7 +9,7 @@ const (
 	maxTagCount  = 200
 )
 
-var regexTag = regexp.MustCompile("^[0-9a-zA-Z,-_./:]*$")
+var regexTag = regexp.MustCompile("^[0-9a-zA-Z-_./:]*$")
 
 func IsValidTag(input string) bool {
 	if !regexTag.MatchString(input) {
