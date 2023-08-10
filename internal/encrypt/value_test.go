@@ -1,37 +1,70 @@
 package encrypt
 
 import (
-	"bytes"
+	"reflect"
 	"testing"
 )
 
 func TestGetValueKey(t *testing.T) {
-	epochKey := []byte{
+	validEpochKey := []byte{
 		0xc9, 0xa9, 0xaa, 0x74, 0x5f, 0xe0, 0x9a, 0x29, 0x8f, 0x8, 0x8,
 		0xa1, 0xc2, 0xbe, 0xba, 0x5a, 0x16, 0x6b, 0x87, 0x54, 0xb1, 0x55,
 		0x7f, 0x15, 0xb4, 0x65, 0xe0, 0xc9, 0xad, 0x5d, 0xfc, 0x31,
 	}
 
-	key, err := GetValueKey(epochKey, "62dyen4w95kv9jhdnp6bbkb3", 1111)
-	if err != nil {
-		t.Error(err)
+	testCases := []struct {
+		name        string
+		epochKey    []byte
+		secretID    string
+		version     int64
+		expectedSum []byte
+		expectedErr error
+	}{
+		{
+			name:     "ValidCase",
+			epochKey: validEpochKey,
+			secretID: "sec-62dyen4w95kv9jhdnp6bbkb3",
+			version:  1111,
+			expectedSum: []byte{
+				0xb2, 0x85, 0xcf, 0xa8, 0xde, 0x72, 0x5d, 0x23, 0x64, 0x7c, 0xb0,
+				0x64, 0xf, 0x7c, 0x73, 0xf0, 0x49, 0x79, 0x8c, 0x13, 0x37, 0x2b,
+				0x85, 0x5f, 0x3b, 0x1a, 0xe2, 0x9a, 0x1e, 0x40, 0x93, 0x8,
+			},
+		},
+		{
+			name:        "InvalidEpochKey",
+			epochKey:    nil,
+			secretID:    "sec-62dyen4w95kv9jhdnp6bbkb3",
+			version:     12345,
+			expectedErr: ErrKeySize,
+		},
+		{
+			name:        "InvalidVersion",
+			epochKey:    validEpochKey,
+			secretID:    "sec-62dyen4w95kv9jhdnp6bbkb3",
+			version:     0,
+			expectedErr: ErrWrongVersion,
+		},
+		{
+			name:        "InvalidSecretID",
+			epochKey:    validEpochKey,
+			secretID:    "62dyen4w95kv9jhdnp6bbkb3",
+			version:     1,
+			expectedErr: ErrWrongSecretID,
+		},
 	}
 
-	if key == nil {
-		t.Error("wrong get value key")
-	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := GetValueKey(tc.epochKey, tc.secretID, tc.version)
 
-	if len(key) != KeySize {
-		t.Error("wrong key size")
-	}
+			if err != tc.expectedErr {
+				t.Errorf("Expected error: %v, but got: %v", tc.expectedErr, err)
+			}
 
-	respHash := []byte{
-		0x59, 0x77, 0xde, 0xca, 0xc9, 0x91, 0x0, 0x64, 0xde, 0x4, 0x65,
-		0xdf, 0xb8, 0x9f, 0x51, 0x6d, 0xf7, 0xf3, 0x9, 0xda, 0xd3, 0x33,
-		0x62, 0x87, 0xa7, 0xb5, 0xf, 0xd6, 0xcf, 0x2, 0x49, 0x4c,
-	}
-
-	if !bytes.Equal(key, respHash) {
-		t.Error("error generate value key")
+			if !reflect.DeepEqual(result, tc.expectedSum) {
+				t.Errorf("Expected hash sum: %#v, but got: %#v", tc.expectedSum, result)
+			}
+		})
 	}
 }
