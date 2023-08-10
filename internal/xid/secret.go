@@ -5,14 +5,16 @@ import (
 	"fmt"
 	"math/big"
 	"regexp"
+	"strings"
 )
 
 const (
 	SecretIDSize   = 24
 	SecretIDSChars = "abcdefghjkmnpqrstuvwxyz123456789"
+	SecretIDPrefix = "sec-"
 )
 
-var secretIDPattern = regexp.MustCompile(fmt.Sprintf("^[%s]{%d}$", SecretIDSChars, SecretIDSize))
+var secretIDPattern = regexp.MustCompile(fmt.Sprintf("^%s[%s]{%d}$", SecretIDPrefix, SecretIDSChars, SecretIDSize))
 
 func GenerateSecretID() (string, error) {
 	randomString := make([]byte, SecretIDSize)
@@ -30,6 +32,14 @@ func GenerateSecretID() (string, error) {
 	return string(randomString), nil
 }
 
-func IsValidSecretIDKey(input string) bool {
+func IsValidSecretID(input string) bool {
 	return secretIDPattern.MatchString(input)
+}
+
+func GetPublicSecretID(input string) string {
+	return fmt.Sprintf("%s%s", SecretIDPrefix, input)
+}
+
+func GetPrivateSecretID(input string) string {
+	return strings.TrimPrefix(input, SecretIDPrefix)
 }
