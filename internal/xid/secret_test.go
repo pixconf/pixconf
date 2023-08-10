@@ -5,13 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/pixconf/pixconf/internal/mock"
 )
-
-type errorReader struct{}
-
-func (er errorReader) Read(_ []byte) (n int, err error) {
-	return 0, assert.AnError
-}
 
 func TestGenerateSecretID(t *testing.T) {
 	secretID, err := GenerateSecretID()
@@ -31,7 +27,7 @@ func TestGenerateSecretID(t *testing.T) {
 }
 
 func TestGenerateSecretID_Error(t *testing.T) {
-	rand.Reader = errorReader{}
+	rand.Reader = mock.ErrorReader{}
 
 	secretID, err := GenerateSecretID()
 	if err == nil {

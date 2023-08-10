@@ -3,6 +3,8 @@ package encrypt
 import (
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEncrypter(t *testing.T) {
@@ -36,4 +38,25 @@ func TestNew(t *testing.T) {
 	if err != ErrKeySize {
 		t.Error("error check key size")
 	}
+}
+
+func TestNewEncoded_Valid(t *testing.T) {
+	enc, err := NewEncoded("HXI6QViGe0itwp7tq4F+0awGOIENNqoj1vMoUgBCQfg=", TypeAesGCM)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if reflect.TypeOf(enc) != reflect.TypeOf(&AesGCM{}) {
+		t.Error("error open AES-GCM")
+	}
+}
+
+func TestNewEncoded_Invalid(t *testing.T) {
+	enc, err := NewEncoded("asd", TypeAesGCM)
+
+	if err == nil {
+		t.Errorf("NewEncoded should have returned an error")
+	}
+
+	assert.Empty(t, enc, "NewEncoded Key should be empty on error")
 }
