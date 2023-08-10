@@ -4,7 +4,32 @@ import (
 	"bytes"
 	"encoding/base64"
 	"testing"
+
+	"golang.org/x/crypto/chacha20poly1305"
 )
+
+func TestChachaPoly_New(t *testing.T) {
+	testCases := []struct {
+		keySize       int
+		expectedError bool
+	}{
+		{chacha20poly1305.KeySize, false},    // Valid key size
+		{chacha20poly1305.KeySize - 1, true}, // Invalid key size
+		{chacha20poly1305.KeySize + 1, true}, // Invalid key size
+	}
+
+	for _, tc := range testCases {
+		key := make([]byte, tc.keySize)
+		_, err := NewChachaPoly(key)
+
+		if tc.expectedError && err == nil {
+			t.Errorf("Expected error for key size %d, but got no error", tc.keySize)
+		}
+		if !tc.expectedError && err != nil {
+			t.Errorf("Expected no error for key size %d, but got error: %s", tc.keySize, err)
+		}
+	}
+}
 
 func TestChachaPoly(t *testing.T) {
 	encrtyptKey := "tmrSWtevJQ7nRZSLlMTNKrjpU10U9XX+McGRPK7hsHg="
@@ -25,6 +50,7 @@ func TestChachaPoly(t *testing.T) {
 	}
 
 	testEncrypter(t, enc, encrtyptData)
+	testEncrypterInvalidRand(t, enc, encrtyptData)
 
 	encrypedData, err := enc.Encrypt(encrtyptData)
 	if err != nil {
