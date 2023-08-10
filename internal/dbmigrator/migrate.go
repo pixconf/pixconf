@@ -32,7 +32,6 @@ func (ml *MigrateList) Add(version int64, row Migrate) {
 }
 
 func (ml *MigrateList) RunMigrate(ctx context.Context, pg *pgxpool.Pool) error {
-
 	versions, err := ml.getVersions(ctx, pg)
 	if err != nil {
 		return err

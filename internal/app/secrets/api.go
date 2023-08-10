@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/pixconf/pixconf/internal/autocert"
 	"github.com/pixconf/pixconf/internal/buildinfo"
 )
@@ -28,7 +29,14 @@ func (s *Secrets) routerEngine() (*gin.Engine, error) {
 		return nil, err
 	}
 
-	api := r.Group("/api/v1/secrets")
+	api := r.Group("/api/v1")
+
+	api.GET("/secrets", s.apiSecretList)
+	api.POST("/secrets", s.apiSecretCreate)
+
+	api.GET("/secrets/:id", s.apiSecretDetail)
+	// api.PUT("/secrets/:id", s.apiSecretUpdate)
+	// api.DELETE("/secrets/:id", s.apiSecretDelete)
 
 	api.POST("/transit/encrypt", s.apiTransitEncrypt)
 	api.POST("/transit/decrypt", s.apiTransitDecrypt)

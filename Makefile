@@ -39,7 +39,6 @@ build-hub:
 
 build-secrets:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-secrets-linux-amd64 $(PKG_PREFIX)/cmd/secrets
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-secrets-darwin-amd64 $(PKG_PREFIX)/cmd/secrets
 
 update:
 	go get -v -u -d ./...

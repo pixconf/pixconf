@@ -1,4 +1,4 @@
-# docker compose -f docker-compose.dev.yml --project-name pixconf up -d --remove-orphans
+# docker compose -f docker-compose.dev.yml --project-name pixconf up -d --remove-orphans --scale agent=3
 
 version: '3.9'
 
@@ -9,7 +9,7 @@ services:
   # docker exec -it pixconf-postgresql-1 psql -U pixconf -W pixconf
   postgresql:
     image: postgres:15
-    restart: always
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=pixconf
       - POSTGRES_PASSWORD=pixconf
@@ -22,6 +22,7 @@ services:
   secrets:
     image: ubuntu:jammy
     command: /build/pixconf-secrets-linux-amd64
+    restart: unless-stopped
     environment:
       - SECRETS_MASTER_ENCRYPTION_KEY=5goenwVdrZTVfJM9r6oVy5fSNo4eL/MED/YBgK3tS4o=
       - SECRETS_DATABASE_URL=postgres://pixconf:pixconf@postgresql:5432/pixconf
@@ -29,3 +30,10 @@ services:
       - ./build/:/build
     ports:
       - '8142:8142'
+
+  agent:
+    image: ubuntu:jammy
+    command: /build/pixconf-agent-linux-amd64
+    restart: unless-stopped
+    volumes:
+      - ./build/:/build

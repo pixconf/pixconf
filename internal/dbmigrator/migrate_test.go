@@ -1,6 +1,8 @@
 package dbmigrator
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestRenderQuery(t *testing.T) {
 	mig := NewMigrateList("test")
