@@ -5,3 +5,6 @@
 [![codecov](https://codecov.io/gh/pixconf/pixconf/branch/main/graph/badge.svg)](https://codecov.io/gh/pixconf/pixconf)
 
 Modern event based configuration management system
+
+> **Note**
+> This project is under active development in my spare time. Until a stable version is released, some concepts may be changed.
