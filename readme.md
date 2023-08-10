@@ -8,3 +8,4 @@ Modern event based configuration management system
 
 > **Note**
 > This project is under active development in my spare time. Until a stable version is released, some concepts may be changed.
+> If you have the time and opportunity - you can connect to the development.
