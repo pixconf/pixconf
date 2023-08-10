@@ -1,12 +1,21 @@
 package xid
 
 import (
+	"crypto/rand"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
+type errorReader struct{}
+
+func (er errorReader) Read(p []byte) (n int, err error) {
+	return 0, assert.AnError
+}
+
 func TestGenerateSecretID(t *testing.T) {
-	char, err := GenerateSecretID()
-	if err != nil && char != "" {
+	secretID, err := GenerateSecretID()
+	if err != nil && secretID != "" {
 		t.Error("secret id must be empty on error")
 	}
 
@@ -14,9 +23,22 @@ func TestGenerateSecretID(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(char) != SecretIDSize {
-		t.Error("wrong len of secret id")
+	assert.Equal(t, SecretIDSize, len(secretID), "Generated SecretID length should match SecretIDSize")
+
+	for _, char := range secretID {
+		assert.Contains(t, SecretIDSChars, string(char), "Generated SecretID contains invalid character")
 	}
+}
+
+func TestGenerateSecretID_Error(t *testing.T) {
+	rand.Reader = errorReader{}
+
+	secretID, err := GenerateSecretID()
+	if err == nil {
+		t.Errorf("GenerateSecretID should have returned an error")
+	}
+
+	assert.Empty(t, secretID, "Generated SecretID should be empty on error")
 }
 
 func TestIsValidSecretID(t *testing.T) {
