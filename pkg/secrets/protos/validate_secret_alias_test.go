@@ -20,7 +20,7 @@ func TestIsValidAlias(t *testing.T) {
 		"agent/",
 		"agent/007",
 		"test/test/test/123",
-		fmt.Sprintf("agent/test/test/%s", strings.Repeat("x", maxAliasLenght)),
+		fmt.Sprintf("agent/test/test/%s", strings.Repeat("x", 250)),
 	}
 
 	for _, alias := range validAliases {
@@ -43,7 +43,7 @@ func TestIsValidAliases(t *testing.T) {
 		"user/jkl012/sss":      {},
 	}
 
-	invalidInput := make(map[string]SecretAlias, maxAliasCount+1)
+	invalidInput := make(map[string]SecretAlias, 300)
 	for i := 0; i <= maxAliasCount; i++ {
 		invalidInput[fmt.Sprintf("agent/servant%d/test", i)] = SecretAlias{}
 	}
