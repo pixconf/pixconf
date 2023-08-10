@@ -15,9 +15,11 @@ func init() {
 			`create table secrets_secret_alias (
 				id bigserial primary key,
 				name varchar(255) not null CHECK (name = LOWER(name)),
-				secret_id varchar(32) not null references secrets_secret (id)
+				secret_id varchar(32) not null references secrets_secret (id),
+				global bool not null default false
 			)`,
 			`CREATE INDEX secrets_secret_alias_name_idx ON secrets_secret_alias (name)`,
+			`CREATE UNIQUE INDEX secrets_secret_alias_global ON secrets_secret_alias (name) WHERE global = true`,
 			`create table secrets_secret_tags (
 				id bigserial primary key,
 				name varchar(255),
