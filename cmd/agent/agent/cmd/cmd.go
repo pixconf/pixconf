@@ -5,7 +5,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/pixconf/pixconf/internal/app/agent"
+	"github.com/pixconf/pixconf/cmd/agent/agent"
 	"github.com/pixconf/pixconf/internal/buildinfo"
 	"github.com/pixconf/pixconf/internal/logger"
 )
