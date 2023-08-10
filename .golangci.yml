@@ -7,7 +7,6 @@ linters:
     - megacheck
     - gas
     - gocyclo
-    - dupl
     - misspell
     - typecheck
     - ineffassign

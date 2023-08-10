@@ -32,8 +32,8 @@ func TestChachaPoly_New(t *testing.T) {
 }
 
 func TestChachaPoly(t *testing.T) {
-	encrtyptKey := "tmrSWtevJQ7nRZSLlMTNKrjpU10U9XX+McGRPK7hsHg="
-	encrtyptData := []byte("the test message")
+	encrtyptKey := "KPUZsDKOlSxjgur8rwogAfKFe4ctPyi6cjNz7rNgz3I="
+	encrtyptData := []byte("to be encrypted")
 
 	encrtyptKeyBytes, err := base64.StdEncoding.DecodeString(encrtyptKey)
 	if err != nil {
