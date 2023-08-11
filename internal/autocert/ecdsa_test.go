@@ -7,6 +7,8 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMarshalECPrivateKey(t *testing.T) {
@@ -33,4 +35,15 @@ func TestMarshalECPrivateKey(t *testing.T) {
 	if parsedPrivateKey.D.Cmp(privateKey.D) != 0 {
 		t.Errorf("Parsed ECDSA private key does not match original")
 	}
+}
+
+func TestMarshalECPrivateKey_Error(t *testing.T) {
+	invalidKey := &ecdsa.PrivateKey{}
+
+	key, err := marshalECPrivateKey(invalidKey)
+	if err == nil {
+		t.Error("Expected an error, but got none")
+	}
+
+	assert.Empty(t, key, "marshaled ec private key should be empty on error")
 }
