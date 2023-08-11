@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pixconf/pixconf/internal/app/secrets/config"
-	"github.com/pixconf/pixconf/internal/app/secrets/postgres"
+	"github.com/pixconf/pixconf/cmd/secrets/secrets/config"
+	"github.com/pixconf/pixconf/cmd/secrets/secrets/postgres"
 	"github.com/pixconf/pixconf/internal/logger"
 )
 

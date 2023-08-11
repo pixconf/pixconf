@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/pixconf/pixconf/internal/app/secrets"
+	"github.com/pixconf/pixconf/cmd/secrets/secrets"
 )
 
 func main() {

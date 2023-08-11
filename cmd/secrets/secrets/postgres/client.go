@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/tracelog"
 
-	"github.com/pixconf/pixconf/internal/app/secrets/config"
-	"github.com/pixconf/pixconf/internal/app/secrets/postgres/migrations"
+	"github.com/pixconf/pixconf/cmd/secrets/secrets/config"
+	"github.com/pixconf/pixconf/cmd/secrets/secrets/postgres/migrations"
 	"github.com/pixconf/pixconf/internal/encrypt"
 	"github.com/pixconf/pixconf/internal/logger"
 	"github.com/pixconf/pixconf/internal/logger/pgxlogger"
