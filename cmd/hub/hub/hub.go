@@ -2,38 +2,39 @@ package hub
 
 import (
 	"context"
-
-	"google.golang.org/grpc"
+	"net/http"
+	"time"
 
 	"github.com/pixconf/pixconf/cmd/hub/hub/config"
 	"github.com/pixconf/pixconf/internal/logger"
 )
 
 type Hub struct {
-	server *grpc.Server
+	srv    *http.Server
 	ctx    context.Context
 	log    *logger.Logger
 	config *config.Config
 }
 
-func New(ctx context.Context) *Hub {
+type Options struct {
+	Config  *config.Config
+	Context context.Context
+	Log     *logger.Logger
+}
+
+func New(opts Options) *Hub {
 	return &Hub{
-		ctx: ctx,
+		ctx:    opts.Context,
+		config: opts.Config,
+		log:    opts.Log,
 	}
 }
 
-func (h *Hub) SetLogger(log *logger.Logger) *Hub {
-	h.log = log
-	return h
-}
-
-func (h *Hub) SetConfig(conf *config.Config) *Hub {
-	h.config = conf
-	return h
-}
-
 func (h *Hub) Shutdown() {
-	if h.server != nil {
-		h.server.Stop()
+	ctx, cancel := context.WithTimeout(h.ctx, 5*time.Second)
+	defer cancel()
+
+	if h.srv != nil {
+		h.srv.Shutdown(ctx)
 	}
 }

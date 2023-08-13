@@ -31,6 +31,15 @@ services:
     ports:
       - '8142:8142'
 
+  hub:
+    image: ubuntu:jammy
+    command: /build/pixconf-hub-linux-amd64
+    restart: unless-stopped
+    volumes:
+      - ./build/:/build
+    ports:
+      - '8140:8140'
+
   agent:
     image: ubuntu:jammy
     command: /build/pixconf-agent-linux-amd64

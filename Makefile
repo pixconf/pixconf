@@ -25,10 +25,6 @@ test-pure:
 test-full:
 	go test -coverprofile=coverage.txt -covermode=atomic ./...
 
-build-protos:
-	rm -f internal/protos/*.pb.go
-	protoc --go_out=internal/protos/ --go-grpc_out=internal/protos/ internal/protos/src/hub_service.proto
-
 all: build-agent build-hub build-secrets
 
 build-agent:
