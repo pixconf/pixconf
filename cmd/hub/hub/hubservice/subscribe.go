@@ -3,7 +3,7 @@ package hubservice
 import (
 	"fmt"
 
-	"github.com/pixconf/pixconf/internal/app/hub/subscribers"
+	"github.com/pixconf/pixconf/cmd/hub/hub/subscribers"
 	"github.com/pixconf/pixconf/internal/protos"
 )
 

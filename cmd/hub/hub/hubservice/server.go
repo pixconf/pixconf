@@ -1,7 +1,7 @@
 package hubservice
 
 import (
-	"github.com/pixconf/pixconf/internal/app/hub/subscribers"
+	"github.com/pixconf/pixconf/cmd/hub/hub/subscribers"
 	"github.com/pixconf/pixconf/internal/logger"
 	"github.com/pixconf/pixconf/internal/protos"
 )

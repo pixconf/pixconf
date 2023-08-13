@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/pixconf/pixconf/internal/app/hub/hubservice"
+	"github.com/pixconf/pixconf/cmd/hub/hub/hubservice"
 	"github.com/pixconf/pixconf/internal/protos"
 )
 
