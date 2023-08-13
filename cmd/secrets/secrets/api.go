@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 
 	"github.com/pixconf/pixconf/internal/autocert"
@@ -19,6 +20,8 @@ func (s *Secrets) routerEngine() (*gin.Engine, error) {
 
 	r := gin.New()
 	r.Use(gin.Recovery())
+
+	pprof.Register(r)
 
 	if err := r.SetTrustedProxies([]string{
 		"10.0.0.0/8",
