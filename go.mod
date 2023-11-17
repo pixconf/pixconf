@@ -1,6 +1,6 @@
 module github.com/pixconf/pixconf
 
-go 1.20
+go 1.21
 
 require (
 	github.com/gin-contrib/pprof v1.4.0
