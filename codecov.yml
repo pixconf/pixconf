@@ -8,13 +8,7 @@ coverage:
 flags:
   agent:
     paths:
-      - cmd/agent/*
-      - internal/app/agent/*
-  hub:
+    - cmd/agent/*
+  server:
     paths:
-      - cmd/hub/*
-      - internal/app/hub/*
-  secrets:
-    paths:
-      - cmd/secrets/*
-      - internal/app/secrets/*
+    - cmd/server/*
