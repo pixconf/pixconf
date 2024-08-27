@@ -2,11 +2,13 @@ package agent
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/eclipse/paho.golang/paho"
+	"github.com/pixconf/pixconf/pkg/server/proto"
 )
 
 func (app *Agent) mqttTopicCommandHandler(pb *paho.Publish) {
@@ -15,6 +17,13 @@ func (app *Agent) mqttTopicCommandHandler(pb *paho.Publish) {
 		pb.Topic,
 		string(pb.Payload),
 	)
+
+	var request proto.AgentRPCRequest
+
+	if err := json.Unmarshal(pb.Payload, &request); err != nil {
+		app.log.Error("failed to unmarshal request", "error", err)
+		return
+	}
 
 	// response only if the message has a response topic
 	if pb.Properties != nil && len(pb.Properties.ResponseTopic) > 0 {

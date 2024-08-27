@@ -28,6 +28,8 @@ func (app *App) initAPI() *gin.Engine {
 		serverAPI := router.Group("/api/v1")
 
 		serverAPI.GET("/agent/connection", app.apiServerAgentConnectionList)
+
+		serverAPI.POST("/agent/send/command", app.apiServerAgentSendCommand)
 	}
 
 	// agent api
