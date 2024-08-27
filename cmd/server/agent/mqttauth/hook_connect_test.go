@@ -15,10 +15,10 @@ func TestOnConnect(t *testing.T) {
 		if err := h.OnConnect(nil, packets.Packet{}); err != nil {
 			if i < maxRate {
 				t.Errorf("expected no error, got %v", err)
-			} else {
-				if err != packets.ErrServerBusy {
-					t.Errorf("expected error %v, got %v", packets.ErrServerBusy, err)
-				}
+			}
+
+			if err != packets.ErrServerBusy {
+				t.Errorf("expected error %v, got %v", packets.ErrServerBusy, err)
 			}
 		}
 	}
