@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/eclipse/paho.golang/paho"
+	"github.com/google/uuid"
 	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/xkit"
 )
@@ -28,10 +29,15 @@ func (app *Agent) mqttSendHealthTelemetry(ctx context.Context) error {
 		return err
 	}
 
+	requestID := uuid.New().String()
+
 	publish := &paho.Publish{
 		Topic:   fmt.Sprintf("pixconf/agent/%s/health", app.mqttClientID),
-		QoS:     0x0,
 		Payload: payload,
+		Properties: &paho.PublishProperties{
+			ContentType:     "application/json",
+			CorrelationData: []byte(requestID),
+		},
 	}
 
 	if _, err := app.mqttConn.Publish(ctx, publish); err != nil {

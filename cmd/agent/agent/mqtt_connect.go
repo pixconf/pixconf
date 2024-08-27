@@ -7,25 +7,31 @@ import (
 
 	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
+	"github.com/eclipse/paho.golang/paho/session/state"
 	"github.com/pixconf/pixconf/pkg/agent/agent2server"
+	"github.com/vitalvas/gokit/xstrings"
 )
 
 func (app *Agent) mqttConnect(ctx context.Context) error {
 	router := paho.NewStandardRouter()
+
+	templateEnv := map[string]string{
+		"client_id": app.mqttClientID,
+	}
+
+	topicCommands := xstrings.SimpleTemplate("pixconf/agent/{{ client_id }}/commands", templateEnv)
+
+	router.RegisterHandler(topicCommands, app.mqttTopicCommandHandler)
 
 	cliCfg := autopaho.ClientConfig{
 		KeepAlive:                     30,
 		CleanStartOnInitialConnection: true,
 		SessionExpiryInterval:         60, // session remains live 60 seconds after disconnect
 		OnConnectionUp: func(cm *autopaho.ConnectionManager, _ *paho.Connack) {
-			fmt.Println("mqtt connection up")
-
-			subscriptions := []paho.SubscribeOptions{
-				{Topic: fmt.Sprintf("pixconf/agent/%s/commands", app.mqttClientID)},
-			}
-
 			if _, err := cm.Subscribe(context.Background(), &paho.Subscribe{
-				Subscriptions: subscriptions,
+				Subscriptions: []paho.SubscribeOptions{
+					{Topic: topicCommands, QoS: 0x0},
+				},
 			}); err != nil {
 				fmt.Printf("error whilst subscribing: %s\n", err)
 			}
@@ -35,6 +41,7 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 		},
 		ClientConfig: paho.ClientConfig{
 			ClientID: app.mqttClientID,
+			Session:  state.NewInMemory(),
 			OnPublishReceived: []func(paho.PublishReceived) (bool, error){
 				func(pr paho.PublishReceived) (bool, error) {
 					router.Route(pr.Packet.Packet())

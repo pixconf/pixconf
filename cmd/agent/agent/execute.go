@@ -37,6 +37,8 @@ func (app *Agent) Execute(cliCtx *cli.Context) error {
 					app.log.Error(err.Error())
 				}
 
+				app.mqttConn = nil
+
 				time.Sleep(5 * time.Second)
 			}
 
