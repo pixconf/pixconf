@@ -3,3 +3,4 @@ build/
 coverage.txt
 *.pem
 tmp/
+cmd/agent/modules/
