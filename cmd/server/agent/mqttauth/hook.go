@@ -2,15 +2,19 @@ package mqttauth
 
 import (
 	"bytes"
+	"fmt"
 	"log/slog"
 
 	mqtt "github.com/mochi-mqtt/server/v2"
+	"golang.org/x/time/rate"
 )
 
 type Hook struct {
 	mqtt.HookBase
 	log    *slog.Logger
 	config *HookOptions
+
+	limiter *rate.Limiter
 }
 
 type HookOptions struct {
@@ -18,8 +22,13 @@ type HookOptions struct {
 }
 
 func NewHook(logger *slog.Logger) *Hook {
+	// TODO: make rate limit configurable or dynamic
+	// TODO: make rate limit based on client ID or IP
+	limiter := rate.NewLimiter(rate.Limit(10), 10) // 10 requests per second
+
 	return &Hook{
-		log: logger,
+		log:     logger,
+		limiter: limiter,
 	}
 }
 
@@ -29,6 +38,7 @@ func (h *Hook) ID() string {
 
 func (h *Hook) Provides(b byte) bool {
 	provides := []byte{
+		mqtt.OnConnect,
 		mqtt.OnConnectAuthenticate,
 		mqtt.OnACLCheck,
 	}
@@ -37,7 +47,10 @@ func (h *Hook) Provides(b byte) bool {
 }
 
 func (h *Hook) Init(config any) error {
-	h.log.Debug("hook", "Init", "config", config)
+	h.log.Debug(
+		fmt.Sprintf("%v", config),
+		"hook", "init",
+	)
 
 	if _, ok := config.(*HookOptions); !ok && config != nil {
 		return mqtt.ErrInvalidConfigType

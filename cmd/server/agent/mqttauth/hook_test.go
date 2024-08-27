@@ -17,5 +17,6 @@ func TestHookProvides(t *testing.T) {
 
 	require.True(t, h.Provides(mqtt.OnACLCheck))
 	require.True(t, h.Provides(mqtt.OnConnectAuthenticate))
+	require.True(t, h.Provides(mqtt.OnConnect))
 	require.False(t, h.Provides(mqtt.OnPublished))
 }

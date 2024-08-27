@@ -15,16 +15,19 @@ func (h *Hook) OnConnectAuthenticate(cl *mqtt.Client, _ packets.Packet) bool {
 
 	// username must be lowercase
 	if strings.ToLower(username) != username {
+		// TODO: make response ErrClientIdentifierNotValid
 		allowConnect = false
 	}
 
 	// username must be equal to client_id
 	if cl.ID != username {
+		// TODO: make response ErrClientIdentifierNotValid
 		allowConnect = false
 	}
 
 	// username must be less than 255 characters. like domain name
 	if len(username) > 255 {
+		// TODO: make response ErrProtocolViolationUsernameTooLong
 		allowConnect = false
 	}
 
