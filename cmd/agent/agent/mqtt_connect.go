@@ -16,7 +16,7 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 	router := paho.NewStandardRouter()
 
 	templateEnv := map[string]string{
-		"client_id": app.mqttClientID,
+		"client_id": app.config.AgentID,
 	}
 
 	topicCommands := xstrings.SimpleTemplate("pixconf/agent/{{ client_id }}/commands", templateEnv)
@@ -40,7 +40,7 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 			fmt.Printf("error whilst attempting connection: %s\n", err)
 		},
 		ClientConfig: paho.ClientConfig{
-			ClientID: app.mqttClientID,
+			ClientID: app.config.AgentID,
 			Session:  state.NewInMemory(),
 			OnPublishReceived: []func(paho.PublishReceived) (bool, error){
 				func(pr paho.PublishReceived) (bool, error) {
@@ -50,12 +50,12 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 			},
 		},
 
-		ConnectUsername: app.mqttClientID,
+		ConnectUsername: app.config.AgentID,
 		ConnectPassword: []byte("my.great.jwt.token.here.123"), // TODO: replace with actual JWT token
 	}
 
 	serverClient, err := agent2server.NewClient(agent2server.Options{
-		ServerEndpoint: app.serverEndpoint,
+		ServerEndpoint: app.config.Server,
 	})
 	if err != nil {
 		return err

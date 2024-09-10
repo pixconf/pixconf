@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -10,12 +11,14 @@ import (
 )
 
 func (app *Agent) Execute(cliCtx *cli.Context) error {
-	app.serverEndpoint = cliCtx.String("server")
+	if app.config == nil {
+		return errors.New("config is not set")
+	}
 
 	group, ctx := errgroup.WithContext(cliCtx.Context)
 
 	group.Go(func() error {
-		socketPath := cliCtx.String("agent-api-socket")
+		socketPath := app.config.AgentAPISocket
 
 		if err := app.ListenAndServe(socketPath); err != nil && err != http.ErrServerClosed {
 			return err
@@ -43,8 +46,6 @@ func (app *Agent) Execute(cliCtx *cli.Context) error {
 			}
 
 		}
-
-		// return nil
 	})
 
 	group.Go(func() error {

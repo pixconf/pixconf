@@ -20,7 +20,7 @@ func (app *Agent) mqttSendHealthTelemetry(ctx context.Context) error {
 	}
 
 	telemetry := mqttmsg.AgentTelemetry{
-		AgentID:     app.mqttClientID,
+		AgentID:     app.config.AgentID,
 		StartedTime: app.startedTime.Unix(),
 	}
 
@@ -32,7 +32,7 @@ func (app *Agent) mqttSendHealthTelemetry(ctx context.Context) error {
 	requestID := uuid.New().String()
 
 	publish := &paho.Publish{
-		Topic:   fmt.Sprintf("pixconf/agent/%s/health", app.mqttClientID),
+		Topic:   fmt.Sprintf("pixconf/agent/%s/health", app.config.AgentID),
 		Payload: payload,
 		Properties: &paho.PublishProperties{
 			ContentType:     "application/json",
