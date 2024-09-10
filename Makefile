@@ -11,12 +11,12 @@ GO_BUILDINFO = -s -w \
 help:
 	@echo "read Makefile"
 
-tests: test-lint test-unit
+tests: test-lint test-race
 
 test-lint:
 	golangci-lint run
 
-test-unit:
+test-race:
 	go test -race -cover ./...
 
 test-pure:
