@@ -26,7 +26,7 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 		KeepAlive:                     30,
 		CleanStartOnInitialConnection: true,
 		SessionExpiryInterval:         60, // session remains live 60 seconds after disconnect
-		OnConnectionUp: func(cm *autopaho.ConnectionManager, conn *paho.Connack) {
+		OnConnectionUp: func(cm *autopaho.ConnectionManager, _ *paho.Connack) {
 			app.log.Info("connected to MQTT broker")
 
 			if _, err := cm.Subscribe(context.Background(), &paho.Subscribe{
