@@ -15,15 +15,15 @@ func defaults(c *Config) error {
 	}
 
 	if c.AgentAPISocket == "" {
-		c.AgentAPISocket = "/run/pixconf-agent.sock"
+		c.AgentAPISocket = getEnvOrDefault("PIXCONF_AGENT_API_SOCKET", "/var/run/pixconf.sock")
 	}
 
 	if c.AgentID == "" {
-		c.AgentID = getHostname()
+		c.AgentID = getEnvOrDefaultFunc("PIXCONF_AGENT_ID", getHostname)
 	}
 
 	if c.Server == "" {
-		c.Server = getServer()
+		c.Server = getEnvOrDefaultFunc("PIXCONF_SERVER", getServer)
 	}
 
 	return nil
@@ -53,10 +53,10 @@ func getHostname() string {
 func getServer() string {
 	hostname := getHostname()
 
-	hostnameSliced := strings.SplitN(hostname, "-", 2)
+	hostnameSliced := strings.SplitN(hostname, ".", 2)
 	if len(hostnameSliced) == 2 {
 		return fmt.Sprintf("https://pixconf.%s", hostnameSliced[1])
 	}
 
-	return ""
+	return "https://pixconf.local/"
 }

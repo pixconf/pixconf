@@ -17,7 +17,7 @@ type Config struct {
 }
 
 func Load(configPath string) (*Config, error) {
-	var config *Config
+	config := &Config{}
 
 	fileInfo, err := os.Stat(configPath)
 	if err == nil {
