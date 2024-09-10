@@ -1,0 +1,22 @@
+# docker compose -f misc/docker-compose.dev.yml --project-name pixconf up -d --remove-orphans --scale agent=3
+
+services:
+  server:
+    image: ubuntu:noble
+    command: /build/pixconf-server-linux-arm64
+    restart: unless-stopped
+    hostname: pixconf-server
+    volumes:
+      - ../build/:/build
+    ports:
+      - "8080:8080"
+      - "1883:1883"
+
+  agent:
+    image: ubuntu:noble
+    command: /build/pixconf-agent-linux-arm64
+    restart: unless-stopped
+    volumes:
+      - ../build/:/build
+    environment:
+      - PIXCONF_SERVER=http://pixconf-server:8080

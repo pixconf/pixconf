@@ -25,17 +25,18 @@ test-pure:
 test-full:
 	go test -coverprofile=coverage.txt -covermode=atomic ./...
 
-all: build-agent build-hub build-secrets
+all: build-agent build-server
+
+build: build-agent build-server
 
 build-agent:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-agent-linux-amd64 $(PKG_PREFIX)/cmd/agent
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-agent-linux-arm64 $(PKG_PREFIX)/cmd/agent
 
-build-hub:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-hub-linux-amd64 $(PKG_PREFIX)/cmd/hub
-
-build-secrets:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-secrets-linux-amd64 $(PKG_PREFIX)/cmd/secrets
+build-server:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-server-linux-amd64 $(PKG_PREFIX)/cmd/server
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags "$(GO_BUILDINFO)" -o build/pixconf-server-linux-arm64 $(PKG_PREFIX)/cmd/server
 
 update:
-	go get -v -u -d ./...
-	go mod tidy -v -compat=1.20
+	go get -v -u ./...
+	go mod tidy -v -compat=1.23
