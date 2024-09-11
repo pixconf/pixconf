@@ -7,6 +7,85 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewConfig(t *testing.T) {
+	tests := []struct {
+		name           string
+		envVars        map[string]string
+		expectedConfig Config
+	}{
+		{
+			name:    "DefaultValues",
+			envVars: map[string]string{},
+			expectedConfig: Config{
+				AgentAPISocket: "/var/run/pixconf.sock",
+				AgentID:        getHostname(),
+				Server:         getServer(),
+			},
+		},
+		{
+			name: "CustomAgentAPISocket",
+			envVars: map[string]string{
+				"PIXCONF_AGENT_API_SOCKET": "/custom/socket",
+			},
+			expectedConfig: Config{
+				AgentAPISocket: "/custom/socket",
+				AgentID:        getHostname(),
+				Server:         getServer(),
+			},
+		},
+		{
+			name: "CustomAgentID",
+			envVars: map[string]string{
+				"PIXCONF_AGENT_ID": "custom_id",
+			},
+			expectedConfig: Config{
+				AgentAPISocket: "/var/run/pixconf.sock",
+				AgentID:        "custom_id",
+				Server:         getServer(),
+			},
+		},
+		{
+			name: "CustomServer",
+			envVars: map[string]string{
+				"PIXCONF_SERVER": "custom_server",
+			},
+			expectedConfig: Config{
+				AgentAPISocket: "/var/run/pixconf.sock",
+				AgentID:        getHostname(),
+				Server:         "custom_server",
+			},
+		},
+		{
+			name: "AllCustomValues",
+			envVars: map[string]string{
+				"PIXCONF_AGENT_API_SOCKET": "/custom/socket",
+				"PIXCONF_AGENT_ID":         "custom_id",
+				"PIXCONF_SERVER":           "custom_server",
+			},
+			expectedConfig: Config{
+				AgentAPISocket: "/custom/socket",
+				AgentID:        "custom_id",
+				Server:         "custom_server",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Set environment variables
+			for key, value := range tt.envVars {
+				t.Setenv(key, value)
+			}
+
+			// Create new config
+			config := newConfig()
+
+			// Assert the config matches the expected config
+			assert.Equal(t, tt.expectedConfig, *config)
+		})
+	}
+}
+
 func TestIsZeroValue(t *testing.T) {
 	tests := []struct {
 		name  string
