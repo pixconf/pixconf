@@ -68,13 +68,12 @@ func TestParseConfigFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var got Config
-			err := parseConfigFile(tt.filePath, tt.payload, &got)
+			got, err := parseConfigFile(tt.filePath, tt.payload)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseConfigFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && got != tt.want {
+			if !tt.wantErr && *got != tt.want {
 				t.Errorf("parseConfigFile() = %v, want %v", got, tt.want)
 			}
 		})

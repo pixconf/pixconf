@@ -1,6 +1,8 @@
 package config
 
-import "os"
+import (
+	"os"
+)
 
 func getEnvOrDefault(key, def string) string {
 	if val, ok := os.LookupEnv(key); ok {

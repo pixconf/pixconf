@@ -9,26 +9,6 @@ import (
 	"github.com/rs/xid"
 )
 
-func defaults(c *Config) error {
-	if c == nil {
-		return fmt.Errorf("config is nil")
-	}
-
-	if c.AgentAPISocket == "" {
-		c.AgentAPISocket = getEnvOrDefault("PIXCONF_AGENT_API_SOCKET", "/var/run/pixconf.sock")
-	}
-
-	if c.AgentID == "" {
-		c.AgentID = getEnvOrDefaultFunc("PIXCONF_AGENT_ID", getHostname)
-	}
-
-	if c.Server == "" {
-		c.Server = getEnvOrDefaultFunc("PIXCONF_SERVER", getServer)
-	}
-
-	return nil
-}
-
 func getHostname() string {
 	if host, err := os.Hostname(); err == nil {
 		return strings.ToLower(host)
