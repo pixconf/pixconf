@@ -2,23 +2,21 @@ package agent
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/eclipse/paho.golang/autopaho"
-	"github.com/rs/xid"
+	"github.com/pixconf/pixconf/cmd/agent/config"
 )
 
 type Agent struct {
-	ctx            context.Context
-	log            *slog.Logger
-	apiServer      *http.Server
-	serverEndpoint string
+	config    *config.Config
+	ctx       context.Context
+	log       *slog.Logger
+	apiServer *http.Server
 
-	mqttConn     *autopaho.ConnectionManager
-	mqttClientID string
+	mqttConn *autopaho.ConnectionManager
 
 	startedTime time.Time
 }
@@ -33,9 +31,12 @@ func New(opts Options) *Agent {
 		ctx: opts.Context,
 		log: opts.Log,
 
-		mqttClientID: fmt.Sprintf("agent-%s", xid.New().String()),
-		startedTime:  time.Now(),
+		startedTime: time.Now(),
 	}
+}
+
+func (app *Agent) SetConfig(config *config.Config) {
+	app.config = config
 }
 
 func (app *Agent) Shutdown() {

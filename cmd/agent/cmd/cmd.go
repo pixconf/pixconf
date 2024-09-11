@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/pixconf/pixconf/cmd/agent/agent"
+	"github.com/pixconf/pixconf/cmd/agent/config"
 	"github.com/pixconf/pixconf/internal/buildinfo"
 	"github.com/urfave/cli/v2"
 )
@@ -26,19 +27,24 @@ func Execute() {
 		Version: buildinfo.Version,
 		Flags: []cli.Flag{
 			&cli.PathFlag{
-				Name:       "agent-api-socket",
-				Value:      "/run/pixconf-agent.sock",
+				Name:       "config",
+				Value:      "/etc/pixconf/agent.yaml",
 				Required:   true,
 				HasBeenSet: true,
-				EnvVars:    []string{"PIXCONF_AGENT_API_SOCKET"},
+				EnvVars:    []string{"PIXCONF_AGENT_CONFIG"},
 			},
-			&cli.StringFlag{
-				Name:       "server",
-				Value:      "http://localhost:8080",
-				Required:   true,
-				HasBeenSet: true,
-				EnvVars:    []string{"PIXCONF_SERVER"},
-			},
+		},
+		Before: func(c *cli.Context) error {
+			configPath := c.String("config")
+
+			conf, err := config.Load(configPath)
+			if err != nil {
+				return err
+			}
+
+			agentApp.SetConfig(conf)
+
+			return nil
 		},
 		Action: agentApp.Execute,
 	}

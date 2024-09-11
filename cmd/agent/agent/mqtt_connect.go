@@ -2,7 +2,6 @@ package agent
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 
 	"github.com/eclipse/paho.golang/autopaho"
@@ -16,7 +15,7 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 	router := paho.NewStandardRouter()
 
 	templateEnv := map[string]string{
-		"client_id": app.mqttClientID,
+		"client_id": app.config.AgentID,
 	}
 
 	topicCommands := xstrings.SimpleTemplate("pixconf/agent/{{ client_id }}/commands", templateEnv)
@@ -28,19 +27,21 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 		CleanStartOnInitialConnection: true,
 		SessionExpiryInterval:         60, // session remains live 60 seconds after disconnect
 		OnConnectionUp: func(cm *autopaho.ConnectionManager, _ *paho.Connack) {
+			app.log.Info("connected to MQTT broker")
+
 			if _, err := cm.Subscribe(context.Background(), &paho.Subscribe{
 				Subscriptions: []paho.SubscribeOptions{
 					{Topic: topicCommands, QoS: 0x0},
 				},
 			}); err != nil {
-				fmt.Printf("error whilst subscribing: %s\n", err)
+				app.log.Warn("error whilst subscribing:", "error", err)
 			}
 		},
 		OnConnectError: func(err error) {
-			fmt.Printf("error whilst attempting connection: %s\n", err)
+			app.log.Warn("error whilst attempting connection:", "error", err)
 		},
 		ClientConfig: paho.ClientConfig{
-			ClientID: app.mqttClientID,
+			ClientID: app.config.AgentID,
 			Session:  state.NewInMemory(),
 			OnPublishReceived: []func(paho.PublishReceived) (bool, error){
 				func(pr paho.PublishReceived) (bool, error) {
@@ -50,12 +51,12 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 			},
 		},
 
-		ConnectUsername: app.mqttClientID,
+		ConnectUsername: app.config.AgentID,
 		ConnectPassword: []byte("my.great.jwt.token.here.123"), // TODO: replace with actual JWT token
 	}
 
 	serverClient, err := agent2server.NewClient(agent2server.Options{
-		ServerEndpoint: app.serverEndpoint,
+		ServerEndpoint: app.config.Server,
 	})
 	if err != nil {
 		return err
