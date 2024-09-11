@@ -54,10 +54,16 @@ func TestParseConfigFile(t *testing.T) {
 	}{
 		{"ValidJSON", "config.json", []byte(`{"agent_id": "value1"}`), Config{AgentID: "value1"}, false},
 		{"ValidYAML", "config.yaml", []byte("agent_id: value1\n"), Config{AgentID: "value1"}, false},
+		{"ValidYAMLShort", "config.yml", []byte("agent_id: value1"), Config{AgentID: "value1"}, false},
 		{"InvalidContent", "config.json", []byte("invalid content"), Config{}, true},
+		{"EmptyFileJSON", "config.json", []byte(""), Config{}, true},
+		{"EmptyFileYAML", "config.yaml", []byte(""), Config{}, true},
 		{"UnsupportedFormat", "config.txt", []byte("agent_id: value1\n"), Config{}, true},
+		{"NoFileExtension", "config", []byte("agent_id: value1\n"), Config{}, true},
 		{"InvalidJSON", "config.json", []byte(`{"agent_id": 123}`), Config{}, true},
-		{"UnknownField", "config.json", []byte(`{"unknown_fileld_test": "value1"}`), Config{}, true},
+		{"InvalidYAML", "config.yaml", []byte("agent_id: ***1\n"), Config{}, true},
+		{"UnknownFieldJSON", "config.json", []byte(`{"unknown_fileld_test": "value1"}`), Config{}, true},
+		{"UnknownFieldYAML", "config.yaml", []byte("unknown_fileld_test: value1\n"), Config{}, true},
 	}
 
 	for _, tt := range tests {
