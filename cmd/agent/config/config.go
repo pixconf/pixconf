@@ -1,13 +1,9 @@
 package config
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
-
-	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
@@ -26,24 +22,13 @@ func Load(configPath string) (*Config, error) {
 			return nil, errors.New("config file is a directory")
 		}
 
-		filePayload, err := os.ReadFile(configPath)
+		filePayload, err := readFile(configPath)
 		if err != nil {
-			return nil, fmt.Errorf("failed to load config file: %w", err)
+			return nil, fmt.Errorf("failed to read config file: %w", err)
 		}
 
-		switch filepath.Ext(configPath) {
-		case ".json":
-			if err := json.Unmarshal(filePayload, &config); err != nil {
-				return nil, fmt.Errorf("failed to unmarshal json config: %w", err)
-			}
-
-		case ".yaml", ".yml":
-			if err := yaml.Unmarshal(filePayload, &config); err != nil {
-				return nil, fmt.Errorf("failed to unmarshal yaml config: %w", err)
-			}
-
-		default:
-			return nil, errors.New("unsupported config file format")
+		if err := parseConfigFile(configPath, filePayload, config); err != nil {
+			return nil, fmt.Errorf("failed to parse config file: %w", err)
 		}
 	}
 
