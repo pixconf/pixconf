@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/packets"
+	"github.com/pixconf/pixconf/internal/apitool"
 	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/server/proto"
 	"github.com/pixconf/pixconf/pkg/xkit"
@@ -35,7 +36,7 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 		return
 	}
 
-	requestID := xkit.GetUUID(c.GetHeader("X-Request-ID"))
+	requestID := xkit.GetUUID(apitool.GetRequestID(c))
 
 	request := &proto.AgentRPCRequest{
 		RequestID: requestID,
@@ -96,5 +97,5 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 
 	app.mqtt.Unsubscribe(responseTopic, subscriptionID)
 
-	c.JSON(http.StatusOK, gin.H{"message": "command sent", "response": response})
+	c.JSON(http.StatusOK, gin.H{"response": response})
 }

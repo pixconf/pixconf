@@ -11,6 +11,7 @@ func GetUUID(input string) string {
 	return uuid.New().String()
 }
 
+// response 16 bytes of uuid
 func GetUUIDBytes(input string) []byte {
 	if uid, err := uuid.Parse(input); err == nil {
 		return uid[:]
