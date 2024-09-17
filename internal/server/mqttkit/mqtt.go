@@ -1,4 +1,4 @@
-package xkit
+package mqttkit
 
 import (
 	"fmt"

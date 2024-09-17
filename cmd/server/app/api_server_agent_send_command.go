@@ -12,6 +12,7 @@ import (
 	"github.com/mochi-mqtt/server/v2/packets"
 	"github.com/pixconf/pixconf/internal/agentmeta"
 	"github.com/pixconf/pixconf/internal/apitool"
+	"github.com/pixconf/pixconf/internal/server/mqttkit"
 	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/server/proto"
 	"github.com/pixconf/pixconf/pkg/xkit"
@@ -56,7 +57,7 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 
 	responseTopic := agentmeta.GetResponseTopic(content.Agent, request.RequestID)
 
-	mqttRequest := &xkit.MQTTPublishRequest{
+	mqttRequest := &mqttkit.MQTTPublishRequest{
 		Topic:   agentTopics.Commands,
 		Payload: requestPayload,
 		Properties: packets.Properties{
@@ -69,7 +70,7 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 	var wait sync.WaitGroup
 	wait.Add(1)
 
-	if err := xkit.MQTTPublish(app.mqtt, mqttRequest); err != nil {
+	if err := mqttkit.MQTTPublish(app.mqtt, mqttRequest); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
