@@ -6,6 +6,7 @@ services:
     command: /build/pixconf-server-linux-arm64
     restart: unless-stopped
     hostname: pixconf-server
+    stop_grace_period: 1m
     volumes:
       - ../build/:/build
     ports:
@@ -16,6 +17,7 @@ services:
     image: ubuntu:noble
     command: /build/pixconf-agent-linux-arm64
     restart: unless-stopped
+    stop_grace_period: 1m
     volumes:
       - ../build/:/build
     environment:

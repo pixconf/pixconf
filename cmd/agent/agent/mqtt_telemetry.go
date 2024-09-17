@@ -3,11 +3,11 @@ package agent
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/eclipse/paho.golang/paho"
 	"github.com/google/uuid"
+	"github.com/pixconf/pixconf/internal/agentmeta"
 	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/xkit"
 )
@@ -31,11 +31,13 @@ func (app *Agent) mqttSendHealthTelemetry(ctx context.Context) error {
 
 	requestID := uuid.New().String()
 
+	topics := agentmeta.GetTopics(app.config.AgentID)
+
 	publish := &paho.Publish{
-		Topic:   fmt.Sprintf("pixconf/agent/%s/health", app.config.AgentID),
+		Topic:   topics.Health,
 		Payload: payload,
 		Properties: &paho.PublishProperties{
-			ContentType:     "application/json",
+			ContentType:     mqttmsg.ContentTypeJSON,
 			CorrelationData: []byte(requestID),
 		},
 	}

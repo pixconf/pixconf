@@ -4,9 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/packets"
+	"github.com/pixconf/pixconf/internal/agentmeta"
+	"github.com/pixconf/pixconf/internal/apitool"
+	"github.com/pixconf/pixconf/internal/server/mqttkit"
+	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/server/proto"
 	"github.com/pixconf/pixconf/pkg/xkit"
 )
@@ -31,7 +38,7 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 		return
 	}
 
-	requestID := xkit.GetUUID(c.GetHeader("X-Request-ID"))
+	requestID := xkit.GetUUID(apitool.GetRequestID(c))
 
 	request := &proto.AgentRPCRequest{
 		RequestID: requestID,
@@ -46,17 +53,53 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 		return
 	}
 
-	mqttRequest := &xkit.MQTTPublishRequest{
-		Topic:   fmt.Sprintf("pixconf/agent/%s/commands", content.Agent),
+	agentTopics := agentmeta.GetTopics(content.Agent)
+
+	responseTopic := agentmeta.GetResponseTopic(content.Agent, request.RequestID)
+
+	mqttRequest := &mqttkit.MQTTPublishRequest{
+		Topic:   agentTopics.Commands,
 		Payload: requestPayload,
 		Properties: packets.Properties{
-			CorrelationData: []byte(request.RequestID),
-			ContentType:     "application/json",
-			ResponseTopic:   fmt.Sprintf("pixconf/agent/%s/response/%s", content.Agent, request.RequestID),
+			CorrelationData: xkit.GetUUIDBytes(requestID),
+			ContentType:     mqttmsg.ContentTypeJSON,
+			ResponseTopic:   responseTopic,
 		},
 	}
 
-	if err := xkit.MQTTPublish(app.mqtt, mqttRequest); err != nil {
+	var wait sync.WaitGroup
+	wait.Add(1)
+
+	if err := mqttkit.MQTTPublish(app.mqtt, mqttRequest); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+
+	var response proto.AgentRPCResponse
+
+	callbackFn := func(_ *mqtt.Client, _ packets.Subscription, pk packets.Packet) {
+		// BUG: panic on duplicate response
+		defer wait.Done()
+
+		if pk.Properties.ContentType != mqttmsg.ContentTypeJSON {
+			return
+		}
+
+		if err := json.Unmarshal(pk.Payload, &response); err != nil {
+			fmt.Printf("Failed to unmarshal response: %s\n", err)
+			return
+		}
+	}
+
+	subscriptionID := int(time.Now().Unix())
+
+	app.mqtt.Subscribe(responseTopic, subscriptionID, callbackFn)
+
+	if xkit.WaitTimeout(&wait, 10*time.Second) {
+		c.JSON(http.StatusRequestTimeout, gin.H{"error": "command timeout"})
+		return
+	}
+
+	app.mqtt.Unsubscribe(responseTopic, subscriptionID)
+
+	c.JSON(http.StatusOK, gin.H{"response": response})
 }

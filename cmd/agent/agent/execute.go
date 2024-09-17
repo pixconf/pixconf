@@ -3,6 +3,7 @@ package agent
 import (
 	"errors"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -17,15 +18,20 @@ func (app *Agent) Execute(cliCtx *cli.Context) error {
 
 	group, ctx := errgroup.WithContext(cliCtx.Context)
 
-	group.Go(func() error {
-		socketPath := app.config.AgentAPISocket
+	// TODO: remove after implementing the agent API
+	if os.Getpid() == 1 {
+		app.log.Info("running as PID 1")
+	} else {
+		group.Go(func() error {
+			socketPath := app.config.AgentAPISocket
 
-		if err := app.ListenAndServe(socketPath); err != nil && err != http.ErrServerClosed {
-			return err
-		}
+			if err := app.ListenAndServe(socketPath); err != nil && err != http.ErrServerClosed {
+				return err
+			}
 
-		return nil
-	})
+			return nil
+		})
+	}
 
 	group.Go(func() error {
 		defer app.Shutdown()
@@ -42,7 +48,10 @@ func (app *Agent) Execute(cliCtx *cli.Context) error {
 
 				app.mqttConn = nil
 
-				time.Sleep(5 * time.Second)
+				if !app.startedTime.IsZero() {
+					// sleep for avoid too frequent reconnection (ddos)
+					time.Sleep(5 * time.Second)
+				}
 			}
 
 		}
