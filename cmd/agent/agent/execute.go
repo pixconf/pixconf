@@ -2,10 +2,12 @@ package agent
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/pixconf/pixconf/internal/agent/authkey"
 	"github.com/urfave/cli/v2"
 	"github.com/vitalvas/gokit/xcmd"
 	"golang.org/x/sync/errgroup"
@@ -15,6 +17,13 @@ func (app *Agent) Execute(cliCtx *cli.Context) error {
 	if app.config == nil {
 		return errors.New("config is not set")
 	}
+
+	authKey, err := authkey.New(app.config.AuthKeyPath)
+	if err != nil {
+		return fmt.Errorf("failed to load auth key: %w", err)
+	}
+
+	app.authKey = authKey
 
 	group, ctx := errgroup.WithContext(cliCtx.Context)
 

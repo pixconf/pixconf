@@ -12,7 +12,10 @@ import (
 )
 
 func (app *Agent) mqttConnect(ctx context.Context) error {
-	cliCfg := app.mqttConnectConfig()
+	cliCfg, err := app.mqttConnectConfig()
+	if err != nil {
+		return err
+	}
 
 	serverClient, err := agent2server.NewClient(agent2server.Options{
 		ServerEndpoint: app.config.Server,
@@ -49,7 +52,7 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 	return nil
 }
 
-func (app *Agent) mqttConnectConfig() autopaho.ClientConfig {
+func (app *Agent) mqttConnectConfig() (autopaho.ClientConfig, error) {
 	topics := agentmeta.GetTopics(app.config.AgentID)
 
 	config := autopaho.ClientConfig{
@@ -58,8 +61,14 @@ func (app *Agent) mqttConnectConfig() autopaho.ClientConfig {
 		SessionExpiryInterval:         60, // session remains live 60 seconds after disconnect
 		Queue:                         app.mqttQueue,
 		ConnectUsername:               app.config.AgentID,
-		ConnectPassword:               []byte("my.great.jwt.token.here.123"), // TODO: replace with actual JWT token
 	}
+
+	connectPassword, err := app.authKey.GenerateAuthKey(app.config.AgentID)
+	if err != nil {
+		return autopaho.ClientConfig{}, fmt.Errorf("failed to generate auth key: %w", err)
+	}
+
+	config.ConnectPassword = connectPassword
 
 	config.OnConnectionUp = func(cm *autopaho.ConnectionManager, _ *paho.Connack) {
 		app.log.Info("connected to MQTT broker")
@@ -104,5 +113,5 @@ func (app *Agent) mqttConnectConfig() autopaho.ClientConfig {
 		}
 	}
 
-	return config
+	return config, nil
 }

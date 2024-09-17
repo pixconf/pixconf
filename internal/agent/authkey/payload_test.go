@@ -8,13 +8,15 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/pixconf/pixconf/internal/buildinfo"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateAuthHeader(t *testing.T) {
-	authKey := New()
+	authKey, err := New("")
+	assert.Nil(t, err)
 
-	err := authKey.generateKey()
+	err = authKey.generateKey()
 	assert.Nil(t, err)
 
 	encodedHeader, err := authKey.generateAuthHeader()
@@ -36,9 +38,10 @@ func TestGenerateAuthHeader(t *testing.T) {
 
 func TestGenerateAuthPayload(t *testing.T) {
 	mockAgentID := "mockAgentID"
-	authKey := New()
+	authKey, err := New("")
+	assert.Nil(t, err)
 
-	err := authKey.generateKey()
+	err = authKey.generateKey()
 	assert.Nil(t, err)
 
 	encodedPayload, err := authKey.generateAuthPayload(mockAgentID)
@@ -54,6 +57,7 @@ func TestGenerateAuthPayload(t *testing.T) {
 	assert.Equal(t, mockAgentID, payload.Issuer)
 	assert.NotEmpty(t, payload.JwtID)
 	assert.NotZero(t, payload.IssuedAT)
+	assert.Equal(t, buildinfo.Version, payload.Version)
 
 	_, err = uuid.Parse(payload.JwtID)
 	assert.Nil(t, err)
@@ -64,9 +68,10 @@ func TestGenerateAuthPayload(t *testing.T) {
 func TestGenerateAuthKey(t *testing.T) {
 	mockAgentID := "mockAgentID"
 
-	authKey := New()
+	authKey, err := New("")
+	assert.Nil(t, err)
 
-	err := authKey.generateKey()
+	err = authKey.generateKey()
 	assert.Nil(t, err)
 
 	encodedAuthKey, err := authKey.GenerateAuthKey(mockAgentID)
@@ -134,6 +139,11 @@ func TestGenerateAuthKeyLen(t *testing.T) {
 			expectError: false,
 		},
 		{
+			name:        "long 4k agentID",
+			agentID:     strings.Repeat("a", 4096),
+			expectError: false,
+		},
+		{
 			name:        "overlong agentID",
 			agentID:     strings.Repeat("a", 65535),
 			expectError: true,
@@ -142,9 +152,10 @@ func TestGenerateAuthKeyLen(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			authKey := New()
+			authKey, err := New("")
+			assert.Nil(t, err)
 
-			err := authKey.generateKey()
+			err = authKey.generateKey()
 			assert.Nil(t, err)
 
 			encodedAuthKey, err := authKey.GenerateAuthKey(tt.agentID)

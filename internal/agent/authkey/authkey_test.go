@@ -1,7 +1,6 @@
 package authkey
 
 import (
-	"crypto/ed25519"
 	"encoding/base64"
 	"testing"
 
@@ -13,37 +12,60 @@ const (
 	publicKeyBase64  = "6tC2zr8mhtB3oW0qCUdQ1o1VTH68OXFUSTt5yQ1hlp8="
 )
 
-func TestLoadPrivateKey(t *testing.T) {
-	privateKeyBytes, err := base64.StdEncoding.DecodeString(privateKeyBase64)
+func TestLoadKeys(t *testing.T) {
+	validPubKey, err := base64.StdEncoding.DecodeString(publicKeyBase64)
 	assert.Nil(t, err)
 
-	assert.True(t, len(privateKeyBytes) == ed25519.PrivateKeySize)
-
-	expectedPubKey, err := base64.StdEncoding.DecodeString(publicKeyBase64)
+	validPrivKey, err := base64.StdEncoding.DecodeString(privateKeyBase64)
 	assert.Nil(t, err)
 
-	assert.True(t, len(expectedPubKey) == ed25519.PublicKeySize)
+	tests := []struct {
+		name    string
+		pubKey  []byte
+		privKey []byte
+		wantErr bool
+	}{
+		{
+			name:    "Valid public and private key",
+			pubKey:  validPubKey,
+			privKey: validPrivKey,
+			wantErr: false,
+		},
+		{
+			name:    "Invalid private key",
+			pubKey:  validPubKey,
+			privKey: []byte(""),
+			wantErr: true,
+		},
+		{
+			name:    "Invalid public key",
+			pubKey:  []byte(""),
+			privKey: validPrivKey,
+			wantErr: true,
+		},
+		{
+			name:    "Invalid public and private key",
+			pubKey:  []byte("=="),
+			privKey: []byte("=="),
+			wantErr: true,
+		},
+		{
+			name:    "Empty public and private key",
+			pubKey:  nil,
+			privKey: nil,
+			wantErr: true,
+		},
+	}
 
-	expectedPubKeyValid := ed25519.PublicKey(expectedPubKey)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			key := &AuthKey{}
 
-	authKey := &AuthKey{}
-	err = authKey.LoadPrivateKey(privateKeyBytes)
-	assert.Nil(t, err)
-
-	assert.NotNil(t, authKey.priv)
-	assert.NotNil(t, authKey.priv)
-
-	signed := authKey.Sign([]byte("test"))
-	assert.NotNil(t, signed)
-
-	assert.True(t, ed25519.Verify(expectedPubKeyValid, []byte("test"), signed))
-
-	assert.Equal(t, expectedPubKeyValid, authKey.pub)
-}
-
-func TestLoadPrivateKeyInvalid(t *testing.T) {
-	authKey := &AuthKey{}
-
-	err := authKey.LoadPrivateKey([]byte("invalid"))
-	assert.NotNil(t, err)
+			err := key.LoadKeys(tt.privKey, tt.pubKey)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("LoadKeys() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
 }

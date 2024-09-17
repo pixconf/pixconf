@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pixconf/pixconf/internal/buildinfo"
 )
 
 type AuthHeader struct {
@@ -18,6 +19,7 @@ type AuthPayload struct {
 	Issuer   string `json:"iss"`
 	JwtID    string `json:"jti"`
 	IssuedAT int64  `json:"iat"`
+	Version  string `json:"ver"`
 }
 
 func (a *AuthKey) generateAuthHeader() (string, error) {
@@ -39,6 +41,7 @@ func (a *AuthKey) generateAuthPayload(agentID string) (string, error) {
 		Issuer:   agentID,
 		JwtID:    uuid.New().String(),
 		IssuedAT: time.Now().Unix(),
+		Version:  buildinfo.Version,
 	}
 
 	payloadJSON, err := json.Marshal(payload)
