@@ -7,6 +7,7 @@ import (
 
 	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
+	"github.com/pixconf/pixconf/internal/agentmeta"
 	"github.com/pixconf/pixconf/pkg/agent/agent2server"
 )
 
@@ -49,7 +50,7 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 }
 
 func (app *Agent) mqttConnectConfig() autopaho.ClientConfig {
-	topics := getMQTTTopics(app.config.AgentID)
+	topics := agentmeta.GetTopics(app.config.AgentID)
 
 	config := autopaho.ClientConfig{
 		KeepAlive:                     30,

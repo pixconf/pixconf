@@ -7,6 +7,7 @@ import (
 
 	"github.com/eclipse/paho.golang/paho"
 	"github.com/google/uuid"
+	"github.com/pixconf/pixconf/internal/agentmeta"
 	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/xkit"
 )
@@ -30,7 +31,7 @@ func (app *Agent) mqttSendHealthTelemetry(ctx context.Context) error {
 
 	requestID := uuid.New().String()
 
-	topics := getMQTTTopics(app.config.AgentID)
+	topics := agentmeta.GetTopics(app.config.AgentID)
 
 	publish := &paho.Publish{
 		Topic:   topics.Health,

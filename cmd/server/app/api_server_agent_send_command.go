@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/packets"
+	"github.com/pixconf/pixconf/internal/agentmeta"
 	"github.com/pixconf/pixconf/internal/apitool"
 	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/server/proto"
@@ -51,10 +52,12 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 		return
 	}
 
-	responseTopic := fmt.Sprintf("pixconf/agent/%s/response/%s", content.Agent, request.RequestID)
+	agentTopics := agentmeta.GetTopics(content.Agent)
+
+	responseTopic := agentmeta.GetResponseTopic(content.Agent, request.RequestID)
 
 	mqttRequest := &xkit.MQTTPublishRequest{
-		Topic:   fmt.Sprintf("pixconf/agent/%s/commands", content.Agent),
+		Topic:   agentTopics.Commands,
 		Payload: requestPayload,
 		Properties: packets.Properties{
 			CorrelationData: xkit.GetUUIDBytes(requestID),
