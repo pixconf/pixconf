@@ -2,6 +2,7 @@ package agent
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/url"
 
@@ -110,6 +111,13 @@ func (app *Agent) mqttConnectConfig() (autopaho.ClientConfig, error) {
 			app.log.Warn("disconnected from MQTT server", "reason", d.Properties.ReasonString)
 		} else {
 			app.log.Warn("disconnected from MQTT server", "reason-code", d.ReasonCode)
+		}
+	}
+
+	config.ClientConfig.PublishHook = func(p *paho.Publish) {
+		if p.Properties != nil {
+			signed := app.authKey.Sign(p.Payload)
+			p.Properties.User.Add("payload-sign", base64.RawURLEncoding.EncodeToString(signed))
 		}
 	}
 
