@@ -2,6 +2,7 @@ package agent
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 
 	"github.com/eclipse/paho.golang/autopaho"
@@ -50,13 +51,11 @@ func (app *Agent) mqttConnect(ctx context.Context) error {
 func (app *Agent) mqttConnectConfig() autopaho.ClientConfig {
 	topics := getMQTTTopics(app.config.AgentID)
 
-	router := paho.NewStandardRouter()
-	router.RegisterHandler(topics.Commands, app.mqttTopicCommandHandler)
-
 	config := autopaho.ClientConfig{
 		KeepAlive:                     30,
 		CleanStartOnInitialConnection: true,
 		SessionExpiryInterval:         60, // session remains live 60 seconds after disconnect
+		Queue:                         app.mqttQueue,
 		ConnectUsername:               app.config.AgentID,
 		ConnectPassword:               []byte("my.great.jwt.token.here.123"), // TODO: replace with actual JWT token
 	}
@@ -79,12 +78,29 @@ func (app *Agent) mqttConnectConfig() autopaho.ClientConfig {
 
 	config.ClientConfig = paho.ClientConfig{
 		ClientID: app.config.AgentID,
-		OnPublishReceived: []func(paho.PublishReceived) (bool, error){
-			func(pr paho.PublishReceived) (bool, error) {
-				router.Route(pr.Packet.Packet())
-				return true, nil // we assume that the router handles all messages
-			},
+	}
+
+	config.ClientConfig.OnPublishReceived = []func(paho.PublishReceived) (bool, error){
+		func(pr paho.PublishReceived) (bool, error) {
+			switch pr.Packet.Topic {
+			case topics.Commands:
+				app.mqttTopicCommandHandler(pr.Packet)
+
+			default:
+				app.log.Warn("received message on unknown topic", "topic", pr.Packet.Topic)
+				return false, fmt.Errorf("unknown topic: %s", pr.Packet.Topic)
+			}
+
+			return false, nil
 		},
+	}
+
+	config.ClientConfig.OnServerDisconnect = func(d *paho.Disconnect) {
+		if d.Properties != nil {
+			app.log.Warn("disconnected from MQTT broker", "reason", d.Properties.ReasonString)
+		} else {
+			app.log.Warn("disconnected from MQTT broker", "reason-code", d.ReasonCode)
+		}
 	}
 
 	return config

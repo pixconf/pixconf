@@ -4,9 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/packets"
+	"github.com/pixconf/pixconf/pkg/mqttmsg"
 	"github.com/pixconf/pixconf/pkg/server/proto"
 	"github.com/pixconf/pixconf/pkg/xkit"
 )
@@ -46,17 +50,51 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 		return
 	}
 
+	responseTopic := fmt.Sprintf("pixconf/agent/%s/response/%s", content.Agent, request.RequestID)
+
 	mqttRequest := &xkit.MQTTPublishRequest{
 		Topic:   fmt.Sprintf("pixconf/agent/%s/commands", content.Agent),
 		Payload: requestPayload,
 		Properties: packets.Properties{
-			CorrelationData: []byte(request.RequestID),
-			ContentType:     "application/json",
-			ResponseTopic:   fmt.Sprintf("pixconf/agent/%s/response/%s", content.Agent, request.RequestID),
+			CorrelationData: xkit.GetUUIDBytes(requestID),
+			ContentType:     mqttmsg.ContentTypeJSON,
+			ResponseTopic:   responseTopic,
 		},
 	}
+
+	var wait sync.WaitGroup
+	wait.Add(1)
 
 	if err := xkit.MQTTPublish(app.mqtt, mqttRequest); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+
+	var response proto.AgentRPCResponse
+
+	callbackFn := func(cl *mqtt.Client, sub packets.Subscription, pk packets.Packet) {
+		// BUG: panic on duplicate response
+		defer wait.Done()
+
+		if pk.Properties.ContentType != mqttmsg.ContentTypeJSON {
+			return
+		}
+
+		if err := json.Unmarshal(pk.Payload, &response); err != nil {
+			fmt.Printf("Failed to unmarshal response: %s\n", err)
+			return
+		}
+	}
+
+	subscriptionId := int(time.Now().Unix())
+
+	app.mqtt.Subscribe(responseTopic, subscriptionId, callbackFn)
+
+	if xkit.WaitTimeout(&wait, 10*time.Second) {
+		c.JSON(http.StatusRequestTimeout, gin.H{"error": "command timeout"})
+		return
+	}
+
+	app.mqtt.Unsubscribe(responseTopic, subscriptionId)
+
+	c.JSON(http.StatusOK, gin.H{"message": "command sent", "response": response})
 }

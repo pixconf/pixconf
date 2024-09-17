@@ -10,3 +10,12 @@ func GetUUID(input string) string {
 
 	return uuid.New().String()
 }
+
+func GetUUIDBytes(input string) []byte {
+	if uid, err := uuid.Parse(input); err == nil {
+		return uid[:]
+	}
+
+	uid := uuid.New()
+	return uid[:]
+}
