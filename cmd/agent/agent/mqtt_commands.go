@@ -3,7 +3,6 @@ package agent
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
@@ -14,11 +13,7 @@ import (
 )
 
 func (app *Agent) mqttTopicCommandHandler(pb *paho.Publish) {
-	fmt.Printf(
-		"received message with topic: %s | payload: %s\n",
-		pb.Topic,
-		string(pb.Payload),
-	)
+	app.log.Debug("received command message", "topic", pb.Topic, "payload", string(pb.Payload), "properties", pb.Properties)
 
 	if pb.Properties == nil {
 		app.log.Error("received command message without properties")

@@ -97,9 +97,9 @@ func (app *Agent) mqttConnectConfig() autopaho.ClientConfig {
 
 	config.ClientConfig.OnServerDisconnect = func(d *paho.Disconnect) {
 		if d.Properties != nil {
-			app.log.Warn("disconnected from MQTT broker", "reason", d.Properties.ReasonString)
+			app.log.Warn("disconnected from MQTT server", "reason", d.Properties.ReasonString)
 		} else {
-			app.log.Warn("disconnected from MQTT broker", "reason-code", d.ReasonCode)
+			app.log.Warn("disconnected from MQTT server", "reason-code", d.ReasonCode)
 		}
 	}
 
