@@ -71,7 +71,7 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 
 	var response proto.AgentRPCResponse
 
-	callbackFn := func(cl *mqtt.Client, sub packets.Subscription, pk packets.Packet) {
+	callbackFn := func(_ *mqtt.Client, _ packets.Subscription, pk packets.Packet) {
 		// BUG: panic on duplicate response
 		defer wait.Done()
 
@@ -85,16 +85,16 @@ func (app *App) apiServerAgentSendCommand(c *gin.Context) {
 		}
 	}
 
-	subscriptionId := int(time.Now().Unix())
+	subscriptionID := int(time.Now().Unix())
 
-	app.mqtt.Subscribe(responseTopic, subscriptionId, callbackFn)
+	app.mqtt.Subscribe(responseTopic, subscriptionID, callbackFn)
 
 	if xkit.WaitTimeout(&wait, 10*time.Second) {
 		c.JSON(http.StatusRequestTimeout, gin.H{"error": "command timeout"})
 		return
 	}
 
-	app.mqtt.Unsubscribe(responseTopic, subscriptionId)
+	app.mqtt.Unsubscribe(responseTopic, subscriptionID)
 
 	c.JSON(http.StatusOK, gin.H{"message": "command sent", "response": response})
 }
