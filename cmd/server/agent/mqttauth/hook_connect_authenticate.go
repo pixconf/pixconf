@@ -58,5 +58,5 @@ func (h *Hook) OnConnectAuthenticate(cl *mqtt.Client, pk packets.Packet) bool {
 		return false
 	}
 
-	return false
+	return true
 }
