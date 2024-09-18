@@ -6,12 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	privateKeyBase64 = "3niPGZ21km9xR665ML9cYJdbLfTqaG6hfxiYhatmUx/q0LbOvyaG0HehbSoJR1DWjVVMfrw5cVRJO3nJDWGWnw=="
-	publicKeyBase64  = "6tC2zr8mhtB3oW0qCUdQ1o1VTH68OXFUSTt5yQ1hlp8="
-)
-
 func TestLoadKeys(t *testing.T) {
+	const (
+		privateKeyBase64 = "3niPGZ21km9xR665ML9cYJdbLfTqaG6hfxiYhatmUx/q0LbOvyaG0HehbSoJR1DWjVVMfrw5cVRJO3nJDWGWnw=="
+		publicKeyBase64  = "6tC2zr8mhtB3oW0qCUdQ1o1VTH68OXFUSTt5yQ1hlp8="
+	)
+
 	validPubKey, err := Base64PersistEncoding.DecodeString(publicKeyBase64)
 	assert.Nil(t, err)
 
