@@ -8,6 +8,10 @@ import (
 	"path/filepath"
 )
 
+var (
+	Base64PersistEncoding = base64.StdEncoding
+)
+
 type Persist struct {
 	PrivateKey []byte `json:"private,omitempty"`
 	PublicKey  []byte `json:"public,omitempty"`
@@ -19,7 +23,7 @@ func (p *Persist) Marshal() (string, error) {
 		return "", err
 	}
 
-	return base64.StdEncoding.EncodeToString(bytes), nil
+	return Base64PersistEncoding.EncodeToString(bytes), nil
 }
 
 func LoadFromDisk(path string) (*Persist, error) {
@@ -28,7 +32,7 @@ func LoadFromDisk(path string) (*Persist, error) {
 		return nil, err
 	}
 
-	payloadDecoded, err := base64.StdEncoding.DecodeString(string(filePayload))
+	payloadDecoded, err := Base64PersistEncoding.DecodeString(string(filePayload))
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +51,7 @@ func (p *Persist) SaveToDisk(path string) error {
 		return err
 	}
 
-	encoded := base64.StdEncoding.EncodeToString(bytes)
+	encoded := Base64PersistEncoding.EncodeToString(bytes)
 
 	keyDir := filepath.Dir(path)
 	if _, err := os.Stat(keyDir); errors.Is(err, os.ErrNotExist) {

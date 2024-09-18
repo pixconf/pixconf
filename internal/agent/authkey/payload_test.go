@@ -1,7 +1,6 @@
 package authkey
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -22,7 +21,7 @@ func TestGenerateAuthHeader(t *testing.T) {
 	encodedHeader, err := authKey.generateAuthHeader()
 	assert.Nil(t, err)
 
-	decodedHeader, err := base64.RawURLEncoding.DecodeString(encodedHeader)
+	decodedHeader, err := Base64Encoding.DecodeString(encodedHeader)
 	assert.Nil(t, err)
 
 	var header AuthHeader
@@ -30,7 +29,7 @@ func TestGenerateAuthHeader(t *testing.T) {
 	assert.Nil(t, err)
 
 	expectedAlgorithm := "ed25519"
-	expectedPublicKey := base64.RawURLEncoding.EncodeToString(authKey.pub)
+	expectedPublicKey := Base64Encoding.EncodeToString(authKey.pub)
 
 	assert.Equal(t, expectedAlgorithm, header.Algorithm)
 	assert.Equal(t, expectedPublicKey, header.PublicKey)
@@ -47,7 +46,7 @@ func TestGenerateAuthPayload(t *testing.T) {
 	encodedPayload, err := authKey.generateAuthPayload(mockAgentID)
 	assert.Nil(t, err)
 
-	decodedPayload, err := base64.RawURLEncoding.DecodeString(encodedPayload)
+	decodedPayload, err := Base64Encoding.DecodeString(encodedPayload)
 	assert.Nil(t, err)
 
 	var payload AuthPayload
@@ -84,7 +83,7 @@ func TestGenerateAuthKey(t *testing.T) {
 	assert.Len(t, parts, 3)
 
 	// Validate Header
-	decodedHeader, err := base64.RawURLEncoding.DecodeString(parts[0])
+	decodedHeader, err := Base64Encoding.DecodeString(parts[0])
 	assert.Nil(t, err)
 
 	var header AuthHeader
@@ -92,13 +91,13 @@ func TestGenerateAuthKey(t *testing.T) {
 	assert.Nil(t, err)
 
 	expectedAlgorithm := "ed25519"
-	expectedPublicKey := base64.RawURLEncoding.EncodeToString(authKey.pub)
+	expectedPublicKey := Base64Encoding.EncodeToString(authKey.pub)
 
 	assert.Equal(t, expectedAlgorithm, header.Algorithm)
 	assert.Equal(t, expectedPublicKey, header.PublicKey)
 
 	// Validate Payload
-	decodedPayload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	decodedPayload, err := Base64Encoding.DecodeString(parts[1])
 	assert.Nil(t, err)
 
 	var payload AuthPayload
@@ -117,7 +116,7 @@ func TestGenerateAuthKey(t *testing.T) {
 	// Validate Signature
 	dataToSign := fmt.Sprintf("%s.%s", parts[0], parts[1])
 	expectedSignature := authKey.Sign([]byte(dataToSign))
-	encodedExpectedSignature := base64.RawURLEncoding.EncodeToString(expectedSignature)
+	encodedExpectedSignature := Base64Encoding.EncodeToString(expectedSignature)
 
 	assert.Equal(t, encodedExpectedSignature, parts[2])
 }

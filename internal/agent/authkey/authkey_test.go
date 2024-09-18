@@ -1,7 +1,6 @@
 package authkey
 
 import (
-	"encoding/base64"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,10 +12,10 @@ const (
 )
 
 func TestLoadKeys(t *testing.T) {
-	validPubKey, err := base64.StdEncoding.DecodeString(publicKeyBase64)
+	validPubKey, err := Base64PersistEncoding.DecodeString(publicKeyBase64)
 	assert.Nil(t, err)
 
-	validPrivKey, err := base64.StdEncoding.DecodeString(privateKeyBase64)
+	validPrivKey, err := Base64PersistEncoding.DecodeString(privateKeyBase64)
 	assert.Nil(t, err)
 
 	tests := []struct {

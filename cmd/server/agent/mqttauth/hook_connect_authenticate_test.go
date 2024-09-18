@@ -12,8 +12,10 @@ import (
 func TestHookOnConnectAuthenticate(t *testing.T) {
 	h := NewHook(slog.New(slog.NewTextHandler(nil, nil)))
 
-	client := new(mqtt.Client)
-	client.Net.Remote = "192.0.2.11"
+	t.Run("empty_username", func(t *testing.T) {
+		client := new(mqtt.Client)
+		client.Net.Remote = "192.0.2.11"
 
-	require.True(t, h.OnConnectAuthenticate(client, packets.Packet{}))
+		require.False(t, h.OnConnectAuthenticate(client, packets.Packet{}))
+	})
 }

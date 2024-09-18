@@ -10,6 +10,10 @@ import (
 	"github.com/pixconf/pixconf/internal/buildinfo"
 )
 
+var (
+	Base64Encoding = base64.RawURLEncoding
+)
+
 type AuthHeader struct {
 	Algorithm string `json:"alg"`
 	PublicKey string `json:"pk"`
@@ -25,7 +29,7 @@ type AuthPayload struct {
 func (a *AuthKey) generateAuthHeader() (string, error) {
 	header := AuthHeader{
 		Algorithm: "ed25519",
-		PublicKey: base64.RawURLEncoding.EncodeToString(a.pub),
+		PublicKey: Base64Encoding.EncodeToString(a.pub),
 	}
 
 	headerJSON, err := json.Marshal(header)
@@ -33,7 +37,7 @@ func (a *AuthKey) generateAuthHeader() (string, error) {
 		return "", err
 	}
 
-	return base64.RawURLEncoding.EncodeToString(headerJSON), nil
+	return Base64Encoding.EncodeToString(headerJSON), nil
 }
 
 func (a *AuthKey) generateAuthPayload(agentID string) (string, error) {
@@ -49,7 +53,7 @@ func (a *AuthKey) generateAuthPayload(agentID string) (string, error) {
 		return "", nil
 	}
 
-	return base64.RawURLEncoding.EncodeToString(payloadJSON), nil
+	return Base64Encoding.EncodeToString(payloadJSON), nil
 }
 
 func (a *AuthKey) GenerateAuthKey(agentID string) ([]byte, error) {
@@ -66,7 +70,7 @@ func (a *AuthKey) GenerateAuthKey(agentID string) ([]byte, error) {
 	dataToSign := fmt.Sprintf("%s.%s", encodedHeader, encodedPayload)
 
 	signature := a.Sign([]byte(dataToSign))
-	encodedSignature := base64.RawURLEncoding.EncodeToString(signature)
+	encodedSignature := Base64Encoding.EncodeToString(signature)
 
 	return []byte(fmt.Sprintf("%s.%s", dataToSign, encodedSignature)), nil
 }
