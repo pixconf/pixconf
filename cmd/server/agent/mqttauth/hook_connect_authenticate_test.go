@@ -84,6 +84,30 @@ func TestHookOnConnectAuthenticate(t *testing.T) {
 		}))
 	})
 
+	t.Run("invalid_token_format", func(t *testing.T) {
+		client := new(mqtt.Client)
+		client.ID = validUser
+
+		require.False(t, h.OnConnectAuthenticate(client, packets.Packet{
+			Connect: packets.ConnectParams{
+				Username: []byte(validUser),
+				Password: []byte("invalid"),
+			},
+		}))
+	})
+
+	t.Run("invalid_username_and_isseuer", func(t *testing.T) {
+		client := new(mqtt.Client)
+		client.ID = "invalid"
+
+		require.False(t, h.OnConnectAuthenticate(client, packets.Packet{
+			Connect: packets.ConnectParams{
+				Username: []byte(client.ID),
+				Password: []byte(validToken),
+			},
+		}))
+	})
+
 	t.Run("valid", func(t *testing.T) {
 		client := new(mqtt.Client)
 		client.ID = validUser
