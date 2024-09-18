@@ -6,6 +6,73 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUnmarshal(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       string
+		expectedHdr *AuthHeader
+		expectedPld *AuthPayload
+		expectedErr bool
+	}{
+		{
+			name:        "ValidUnmarshal",
+			input:       `eyJhbGciOiJlZDI1NTE5IiwicGsiOiJQbzdVS1lzaUJJb1d6M2djaGJocTdtQVI5SDhhQjlWandIcHFlU2RObFhjIn0.eyJpc3MiOiI0ZjhhYjE3NWI2MTYiLCJqdGkiOiI4ZDE0MGE2Ni0wNDgyLTQ1YjktYjVmOC1kZjJhNDY5MzNhOTEiLCJpYXQiOjE3MjY2NDIwNDksInZlciI6ImRldiJ9.QfzxaGEQSBrTzm3riEwHpnUFQTbfby68fbNg7pVIce2C9Gtl8UADJkKoe5AXlxy6WIDdXypNGxyaWd_6uPGPBw`,
+			expectedHdr: &AuthHeader{PublicKey: "Po7UKYsiBIoWz3gchbhq7mAR9H8aB9VjwHpqeSdNlXc", Algorithm: "ed25519"},
+			expectedPld: &AuthPayload{Issuer: "4f8ab175b616", JwtID: "8d140a66-0482-45b9-b5f8-df2a46933a91", IssuedAT: 1726642049, Version: "dev"},
+			expectedErr: false,
+		},
+		{
+			name:        "InvalidPayloadFormat",
+			input:       `invalidpayload`,
+			expectedHdr: nil,
+			expectedPld: nil,
+			expectedErr: true,
+		},
+		{
+			name:        "InvalidHeaderBase64",
+			input:       `!!!invalidbase64!!!.eyJpc3MiOiAiZXhhbXBsZS01Njg1YmRiODU5LXhtbWdkIn0.0pZvyprjYEMwJfYAfc3ckUB0J0TNtALsnvzxQfyFsC/3X1CkUfXxjdSvVj5g0OaPPVI28HaRH4qENkMAMu27`,
+			expectedHdr: nil,
+			expectedPld: nil,
+			expectedErr: true,
+		},
+		{
+			name:        "InvalidPayloadBase64",
+			input:       `eyJwayI6ICJhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5eiJ9.!!!invalidbase64!!!.0pZvyprjYEMwJfYAfc3ckUB0J0TNtALsnvzxQfyFsC/3X1CkUfXxjdSvVj5g0OaPPVI28HaRH4qENkMAMu27`,
+			expectedHdr: nil,
+			expectedPld: nil,
+			expectedErr: true,
+		},
+		{
+			name:        "InvalidSignatureBase64",
+			input:       `eyJwayI6ICJhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5eiJ9.eyJpc3MiOiAiZXhhbXBsZS01Njg1YmRiODU5LXhtbWdkIn0.!!!invalidbase64!!!`,
+			expectedHdr: nil,
+			expectedPld: nil,
+			expectedErr: true,
+		},
+		{
+			name:        "InvalidSignature",
+			input:       `eyJwayI6ICJhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5eiJ9.eyJpc3MiOiAiZXhhbXBsZS01Njg1YmRiODU5LXhtbWdkIn0.FFFFFFFFFFFF`,
+			expectedHdr: nil,
+			expectedPld: nil,
+			expectedErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			header, payload, err := Unmarshal(tt.input)
+			if tt.expectedErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, tt.expectedHdr, header)
+			assert.Equal(t, tt.expectedPld, payload)
+		})
+	}
+}
+
 func TestUnmarshalHeader(t *testing.T) {
 	tests := []struct {
 		name        string
