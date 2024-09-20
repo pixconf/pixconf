@@ -9,6 +9,7 @@ import (
 	"github.com/eclipse/paho.golang/autopaho"
 	autopahoMemory "github.com/eclipse/paho.golang/autopaho/queue/memory"
 	"github.com/pixconf/pixconf/cmd/agent/config"
+	"github.com/pixconf/pixconf/internal/agent/authkey"
 )
 
 type Agent struct {
@@ -16,6 +17,8 @@ type Agent struct {
 	ctx       context.Context
 	log       *slog.Logger
 	apiServer *http.Server
+
+	authKey *authkey.AuthKey
 
 	mqttConn  *autopaho.ConnectionManager
 	mqttQueue *autopahoMemory.Queue

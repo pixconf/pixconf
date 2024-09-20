@@ -5,8 +5,8 @@ import (
 
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/listeners"
-	"github.com/pixconf/pixconf/cmd/server/agent/mqttauth"
 	"github.com/pixconf/pixconf/internal/buildinfo"
+	"github.com/pixconf/pixconf/internal/server/mqttauth"
 )
 
 func (app *App) initMQTT() error {

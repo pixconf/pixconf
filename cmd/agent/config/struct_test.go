@@ -19,6 +19,7 @@ func TestNewConfig(t *testing.T) {
 			expectedConfig: Config{
 				AgentAPISocket: "/var/run/pixconf.sock",
 				AgentID:        getHostname(),
+				AuthKeyPath:    "/etc/pixconf/agent_auth.key",
 				Server:         getServer(),
 			},
 		},
@@ -30,6 +31,7 @@ func TestNewConfig(t *testing.T) {
 			expectedConfig: Config{
 				AgentAPISocket: "/custom/socket",
 				AgentID:        getHostname(),
+				AuthKeyPath:    "/etc/pixconf/agent_auth.key",
 				Server:         getServer(),
 			},
 		},
@@ -41,6 +43,7 @@ func TestNewConfig(t *testing.T) {
 			expectedConfig: Config{
 				AgentAPISocket: "/var/run/pixconf.sock",
 				AgentID:        "custom_id",
+				AuthKeyPath:    "/etc/pixconf/agent_auth.key",
 				Server:         getServer(),
 			},
 		},
@@ -52,6 +55,7 @@ func TestNewConfig(t *testing.T) {
 			expectedConfig: Config{
 				AgentAPISocket: "/var/run/pixconf.sock",
 				AgentID:        getHostname(),
+				AuthKeyPath:    "/etc/pixconf/agent_auth.key",
 				Server:         "custom_server",
 			},
 		},
@@ -60,11 +64,13 @@ func TestNewConfig(t *testing.T) {
 			envVars: map[string]string{
 				"PIXCONF_AGENT_API_SOCKET": "/custom/socket",
 				"PIXCONF_AGENT_ID":         "custom_id",
+				"PIXCONF_AUTH_KEY_PATH":    "/custom/path",
 				"PIXCONF_SERVER":           "custom_server",
 			},
 			expectedConfig: Config{
 				AgentAPISocket: "/custom/socket",
 				AgentID:        "custom_id",
+				AuthKeyPath:    "/custom/path",
 				Server:         "custom_server",
 			},
 		},
