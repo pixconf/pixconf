@@ -10,11 +10,11 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/mochi-mqtt/server/v2 v2.6.5
 	github.com/rs/xid v1.6.0
-	github.com/samber/slog-gin v1.13.4
+	github.com/samber/slog-gin v1.13.5
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/match v1.1.1
 	github.com/urfave/cli/v2 v2.27.4
-	github.com/vitalvas/gokit v0.12.0
+	github.com/vitalvas/gokit v0.13.0
 	golang.org/x/sync v0.8.0
 	golang.org/x/time v0.6.0
 	gopkg.in/yaml.v3 v3.0.1
