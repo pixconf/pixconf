@@ -3,20 +3,20 @@ module github.com/pixconf/pixconf
 go 1.23
 
 require (
-	github.com/eclipse/paho.golang v0.21.0
+	github.com/eclipse/paho.golang v0.22.0
 	github.com/gin-contrib/location v1.0.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/mochi-mqtt/server/v2 v2.6.6
 	github.com/rs/xid v1.6.0
-	github.com/samber/slog-gin v1.13.5
-	github.com/stretchr/testify v1.9.0
+	github.com/samber/slog-gin v1.13.6
+	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/match v1.1.1
 	github.com/urfave/cli/v2 v2.27.5
-	github.com/vitalvas/gokit v0.13.0
-	golang.org/x/sync v0.8.0
-	golang.org/x/time v0.7.0
+	github.com/vitalvas/gokit v0.13.1
+	golang.org/x/sync v0.9.0
+	golang.org/x/time v0.8.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -51,7 +51,7 @@ require (
 	golang.org/x/arch v0.10.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/net v0.29.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
