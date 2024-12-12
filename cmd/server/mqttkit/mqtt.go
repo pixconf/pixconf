@@ -6,7 +6,6 @@ import (
 
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/packets"
-	"github.com/rs/xid"
 )
 
 type MQTTPublishRequest struct {
@@ -18,7 +17,7 @@ type MQTTPublishRequest struct {
 
 // hack: https://github.com/mochi-mqtt/server/issues/428
 func MQTTPublish(server *mqtt.Server, request *MQTTPublishRequest) error {
-	clientID := fmt.Sprintf("inline-%s", xid.New().String())
+	clientID := fmt.Sprintf("inline-%d", time.Now().UnixNano())
 	client := server.NewClient(nil, "local", clientID, true)
 
 	packet := packets.Packet{
