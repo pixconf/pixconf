@@ -10,6 +10,7 @@ import (
 	"github.com/pixconf/pixconf/internal/agent/authkey"
 	"github.com/pixconf/pixconf/internal/agentmeta"
 	"github.com/pixconf/pixconf/pkg/agent/agent2server"
+	"github.com/pixconf/pixconf/pkg/mqttmsg"
 )
 
 func (app *Agent) mqttConnect(ctx context.Context) error {
@@ -117,7 +118,7 @@ func (app *Agent) mqttConnectConfig() (autopaho.ClientConfig, error) {
 	config.ClientConfig.PublishHook = func(p *paho.Publish) {
 		if p.Properties != nil {
 			signed := app.authKey.Sign(p.Payload)
-			p.Properties.User.Add("payload-sign", authkey.Base64Encoding.EncodeToString(signed))
+			p.Properties.User.Add(mqttmsg.HeaderPayloadSignature, authkey.Base64Encoding.EncodeToString(signed))
 		}
 	}
 
