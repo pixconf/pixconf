@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/http"
 	"sort"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +23,8 @@ func (m apiServerAgentConnectionListResponse) Swap(i, j int) { m[i], m[j] = m[j]
 type apiServerAgentConnectionListResponseRow struct {
 	Name             string `json:"name"`
 	ConnectedAddress string `json:"connected_address,omitempty"`
+	ConnectedPort    int    `json:"connected_port,omitempty"`
+	Endpoint         string `json:"endpoint,omitempty"`
 }
 
 func (app *App) apiServerAgentConnectionList(c *gin.Context) {
@@ -40,11 +43,15 @@ func (app *App) apiServerAgentConnectionList(c *gin.Context) {
 		}
 
 		respRow := apiServerAgentConnectionListResponseRow{
-			Name: name,
+			Name:     name,
+			Endpoint: row.Net.Listener,
 		}
 
-		if remoteAddr, _, err := net.SplitHostPort(row.Net.Conn.RemoteAddr().String()); err == nil {
+		if remoteAddr, repotePort, err := net.SplitHostPort(row.Net.Conn.RemoteAddr().String()); err == nil {
 			respRow.ConnectedAddress = remoteAddr
+			if port, err := strconv.Atoi(repotePort); err == nil {
+				respRow.ConnectedPort = port
+			}
 		}
 
 		response = append(response, respRow)
