@@ -12,16 +12,16 @@ func validate(conf Config) error {
 	}
 
 	for _, row := range conf.MQTT.Listen {
-		rowUrl, err := url.Parse(row)
+		rowURL, err := url.Parse(row)
 		if err != nil {
 			return err
 		}
 
-		if !slices.Contains([]string{"mqtt", "ws"}, rowUrl.Scheme) {
+		if !slices.Contains([]string{"mqtt", "ws"}, rowURL.Scheme) {
 			return errors.New("mqtt.listen: invalid scheme")
 		}
 
-		if rowUrl.Port() == "" {
+		if rowURL.Port() == "" {
 			return errors.New("mqtt.listen: port is required")
 		}
 	}
