@@ -12,6 +12,9 @@ services:
     ports:
       - "8080:8080"
       - "1883:1883"
+    environment:
+      - PIXCONF_MQTT_LISTEN=mqtt://:1883,ws://:8083
+      - PIXCONF_MQTT_ENDPOINTS=mqtt://pixconf-server:1883,ws://pixconf-server:8083
 
   agent:
     image: ubuntu:noble

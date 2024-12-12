@@ -1,12 +1,16 @@
 package app
 
 import (
+	"errors"
+	"fmt"
 	"math"
+	"net/url"
 
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/listeners"
 	"github.com/pixconf/pixconf/cmd/server/mqttauth"
 	"github.com/pixconf/pixconf/internal/buildinfo"
+	"github.com/vitalvas/gokit/xstrings"
 )
 
 func (app *App) initMQTT() error {
@@ -41,13 +45,42 @@ func (app *App) initMQTT() error {
 		return err
 	}
 
-	tcp := listeners.NewTCP(listeners.Config{
-		ID:      "mqtt-agent",
-		Address: ":1883",
-	})
+	for _, row := range app.config.MQTT.Listen {
+		rowURL, err := url.Parse(row)
+		if err != nil {
+			return err
+		}
 
-	if err := app.mqtt.AddListener(tcp); err != nil {
-		return err
+		var listener []listeners.Config
+
+		listenAddress := fmt.Sprintf("%s:%s", rowURL.Hostname(), rowURL.Port())
+		listenID := xstrings.ReplaceMap(
+			fmt.Sprintf("%s-agent-%s-%s", rowURL.Scheme, rowURL.Hostname(), rowURL.Port()),
+			map[string]string{":": "-", ".": "-", "[": "", "]": ""},
+		)
+
+		switch rowURL.Scheme {
+		case "mqtt":
+			listener = append(listener, listeners.Config{
+				Type:    listeners.TypeTCP,
+				ID:      listenID,
+				Address: listenAddress,
+			})
+
+		case "ws":
+			listener = append(listener, listeners.Config{
+				Type:    listeners.TypeWS,
+				ID:      listenID,
+				Address: listenAddress,
+			})
+
+		default:
+			return errors.New("unsupported mqtt listener scheme: " + rowURL.Scheme)
+		}
+
+		if err := app.mqtt.AddListenersFromConfig(listener); err != nil {
+			return err
+		}
 	}
 
 	return nil
