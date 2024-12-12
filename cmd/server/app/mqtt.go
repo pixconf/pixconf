@@ -9,6 +9,7 @@ import (
 	mqtt "github.com/mochi-mqtt/server/v2"
 	"github.com/mochi-mqtt/server/v2/listeners"
 	"github.com/pixconf/pixconf/cmd/server/mqttauth"
+	"github.com/pixconf/pixconf/cmd/server/mqtthandler"
 	"github.com/pixconf/pixconf/internal/buildinfo"
 	"github.com/vitalvas/gokit/xstrings"
 )
@@ -42,6 +43,10 @@ func (app *App) initMQTT() error {
 	if err := app.mqtt.AddHook(mqttAuthHook, &mqttauth.HookOptions{
 		Server: app.mqtt,
 	}); err != nil {
+		return err
+	}
+
+	if err := app.mqtt.AddHook(mqtthandler.NewHook(app.logger.With("service", "mqtt-handler")), nil); err != nil {
 		return err
 	}
 
