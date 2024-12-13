@@ -26,7 +26,9 @@ func (c *Client) GetAgentAutoConfiguration(ctx context.Context) (*proto.AgentAut
 		return nil, err
 	}
 
+	request.Header.Set("Accept", "application/json")
 	request.Header.Set("User-Agent", fmt.Sprintf("pixconf-agent/%s", buildinfo.Version))
+	request.Header.Set("X-PixConf-Version", buildinfo.Version)
 
 	resp, err := client.Do(request)
 	if err != nil {
