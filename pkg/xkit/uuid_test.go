@@ -73,3 +73,28 @@ func TestGetUUIDBytes(t *testing.T) {
 		})
 	}
 }
+func TestLoadUUIDFromBytes(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []byte
+		expected string
+	}{
+		{
+			name:     "valid uuid bytes",
+			input:    []byte("6ba7b810-9dad-11d1-80b4-00c04fd430c8"),
+			expected: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+		},
+		{
+			name:     "invalid uuid bytes",
+			input:    []byte{0x00, 0x01, 0x02},
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := LoadUUIDFromBytes(tt.input)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}

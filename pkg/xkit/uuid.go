@@ -20,3 +20,11 @@ func GetUUIDBytes(input string) []byte {
 	uid := uuid.New()
 	return uid[:]
 }
+
+func LoadUUIDFromBytes(input []byte) string {
+	if uid, err := uuid.ParseBytes(input); err == nil {
+		return uid.String()
+	}
+
+	return ""
+}

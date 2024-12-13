@@ -48,15 +48,19 @@ func (app *Agent) mqttTopicCommandHandler(pb *paho.Publish) {
 			return
 		}
 
+		publishProperties := &paho.PublishProperties{
+			ContentType:     mqttmsg.ContentTypeJSON,
+			CorrelationData: pb.Properties.CorrelationData,
+		}
+
+		publishProperties.User.Add(mqttmsg.HeaderRequestID, request.RequestID)
+
 		publish := &autopaho.QueuePublish{
 			Publish: &paho.Publish{
 				Topic:   pb.Properties.ResponseTopic,
 				Payload: responsePayload,
 
-				Properties: &paho.PublishProperties{
-					ContentType:     mqttmsg.ContentTypeJSON,
-					CorrelationData: pb.Properties.CorrelationData,
-				},
+				Properties: publishProperties,
 			},
 		}
 

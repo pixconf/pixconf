@@ -10,11 +10,16 @@ import (
 
 func (h *Hook) OnPublished(cl *mqtt.Client, pk packets.Packet) {
 	var validSignature bool
+	var requestID string
 
 	if pk.Properties.User != nil {
 		for _, row := range pk.Properties.User {
 			if row.Key == mqttmsg.HeaderPayloadSignature {
 				validSignature = true
+			}
+
+			if row.Key == mqttmsg.HeaderRequestID {
+				requestID = row.Val
 			}
 		}
 	}
@@ -28,18 +33,7 @@ func (h *Hook) OnPublished(cl *mqtt.Client, pk packets.Packet) {
 		return
 	}
 
-	if pk.Properties.CorrelationData == nil {
-		h.log.Warn(
-			"missing correlation data",
-			"client", cl.ID,
-			"topic", pk.TopicName,
-		)
-		return
-	}
-
 	topics := agentmeta.GetTopics(cl.ID)
-
-	topicRespone := agentmeta.GetResponseTopic(cl.ID, string(pk.Properties.CorrelationData))
 
 	switch pk.TopicName {
 	case topics.Health:
@@ -50,7 +44,7 @@ func (h *Hook) OnPublished(cl *mqtt.Client, pk packets.Packet) {
 			"payload", string(pk.Payload),
 		)
 
-	case topicRespone:
+	case agentmeta.GetResponseTopic(cl.ID, requestID):
 		h.log.Debug(
 			"response",
 			"client", cl.ID,
