@@ -1,11 +1,14 @@
 package agent
 
 import (
+	"encoding/json"
 	"errors"
 	"net"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/pixconf/pixconf/internal/buildinfo"
 )
 
 func (app *Agent) ListenAndServe(apiSocket string) error {
@@ -40,5 +43,28 @@ func (app *Agent) ListenAndServe(apiSocket string) error {
 func (app *Agent) apiRouterEngine() *http.ServeMux {
 	r := http.NewServeMux()
 
+	r.HandleFunc("/v1/info", app.apiInfoHandler)
+
 	return r
+}
+
+func (app *Agent) apiInfoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	response := map[string]interface{}{
+		"pid":     os.Getpid(),
+		"version": buildinfo.Version,
+	}
+
+	if ppid := os.Getppid(); ppid > 0 {
+		response["ppid"] = ppid
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
