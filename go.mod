@@ -4,7 +4,7 @@ go 1.23
 
 require (
 	github.com/eclipse/paho.golang v0.22.0
-	github.com/gin-contrib/location v1.0.1
+	github.com/gin-contrib/location v1.0.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -21,7 +21,7 @@ require (
 )
 
 require (
-	github.com/bytedance/sonic v1.12.5 // indirect
+	github.com/bytedance/sonic v1.12.6 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
@@ -50,8 +50,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.33.0 // indirect
 	golang.org/x/arch v0.12.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/protobuf v1.35.2 // indirect
+	google.golang.org/protobuf v1.36.1 // indirect
 )
