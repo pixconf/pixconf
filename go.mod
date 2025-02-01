@@ -8,15 +8,15 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/mochi-mqtt/server/v2 v2.6.6
+	github.com/mochi-mqtt/server/v2 v2.7.7
 	github.com/rs/xid v1.6.0
-	github.com/samber/slog-gin v1.13.6
+	github.com/samber/slog-gin v1.14.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/match v1.1.1
 	github.com/urfave/cli/v2 v2.27.5
 	github.com/vitalvas/gokit v0.14.0
 	golang.org/x/sync v0.10.0
-	golang.org/x/time v0.8.0
+	golang.org/x/time v0.9.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
